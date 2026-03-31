@@ -16,6 +16,50 @@ const ARTICLES_DATA = [
     readTime: '15 分钟',
     image: '🐳',
     views: 0
+  },
+  {
+    id: 2,
+    title: '计算机科学导论',
+    excerpt: '全面系统的计算机科学入门教程，涵盖计算机基础、编程、算法、数据结构、操作系统、网络、数据库、软件工程、Web 开发、网络安全等核心知识。',
+    category: '教程',
+    author: 'DRGJU',
+    date: '2024-03-31',
+    readTime: '180 分钟',
+    image: '💻',
+    views: 0
+  },
+  {
+    id: 3,
+    title: '编码：隐匿在计算机软件背后的语言',
+    excerpt: '基于 Charles Petzold 经典著作，从零开始系统讲解编码、二进制、逻辑电路到计算机工作原理的完整知识体系，包含详细讲解、实例演示、动手实验和完整学习路线。',
+    category: '教程',
+    author: 'DRGJU',
+    date: '2024-03-31',
+    readTime: '180 分钟',
+    image: '📖',
+    views: 0
+  },
+  {
+    id: 4,
+    title: '网络是怎样连接的 - 完整指南',
+    excerpt: '基于户根勤经典著作，系统讲解从输入 URL 到网页显示的完整网络过程，涵盖 HTTP、DNS、TCP/IP、路由器、交换机等核心知识。',
+    category: '教程',
+    author: 'DRGJU',
+    date: '2024-03-31',
+    readTime: '150 分钟',
+    image: '🌐',
+    views: 0
+  },
+  {
+    id: 5,
+    title: 'Python 编程：从入门到实践 - 完整教程',
+    excerpt: '基于 Eric Matthes 经典著作，从零开始系统讲解 Python 编程的基础知识和实践项目，包含三个完整项目：游戏开发、数据可视化、Web 应用。',
+    category: '教程',
+    author: 'DRGJU',
+    date: '2024-03-31',
+    readTime: '200 分钟',
+    image: '🐍',
+    views: 0
   }
 ];
 
