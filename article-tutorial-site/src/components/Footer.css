@@ -63,11 +63,18 @@
   font-size: 20px;
   transition: all 0.3s ease;
   text-decoration: none;
+  color: var(--text-secondary);
 }
 
 .social-link:hover {
   background: var(--primary-color);
   transform: translateY(-3px);
+  color: white;
+}
+
+.github-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .subscribe-form {

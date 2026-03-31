@@ -8,91 +8,14 @@ const ITEMS_PER_PAGE = 6;
 const ARTICLES_DATA = [
   {
     id: 1,
-    title: '欢迎来到知识学堂',
-    excerpt: '这是一个专注于分享优质文章和教程的平台，我们致力于提供高质量的学习内容，帮助您快速掌握新知识和技能。',
-    category: '公告',
-    author: '管理员',
-    date: '2024-01-15',
-    readTime: '2 分钟',
-    image: '🎉',
-    views: 1200
-  },
-  {
-    id: 2,
-    title: '如何高效学习编程',
-    excerpt: '学习编程需要正确的方法和持续的努力。本文将分享一些高效学习的技巧和方法，帮助您更快地掌握编程技能。',
-    category: '教程',
-    author: '张老师',
-    date: '2024-01-14',
-    readTime: '5 分钟',
-    image: '💻',
-    views: 3500
-  },
-  {
-    id: 3,
-    title: '前端开发最佳实践',
-    excerpt: '探索现代前端开发的最佳实践，包括代码组织、性能优化、可维护性等方面的经验和技巧。',
+    title: 'Docker 安装与配置完全指南',
+    excerpt: '从零开始学习 Docker，包含完整的安装步骤、配置优化和最佳实践，帮助您快速上手容器化技术。',
     category: '技术',
-    author: '李工程师',
-    date: '2024-01-13',
-    readTime: '8 分钟',
-    image: '⚡',
-    views: 2800
-  },
-  {
-    id: 4,
-    title: '时间管理的艺术',
-    excerpt: '在快节奏的生活中，如何有效管理时间？本文分享实用的时间管理技巧，帮助您提高工作效率。',
-    category: '生活',
-    author: '王老师',
-    date: '2024-01-12',
-    readTime: '6 分钟',
-    image: '⏰',
-    views: 1900
-  },
-  {
-    id: 5,
-    title: 'React Hooks 完全指南',
-    excerpt: '深入理解 React Hooks 的工作原理，掌握 useState、useEffect 等常用 Hook 的使用方法。',
-    category: '技术',
-    author: '陈开发者',
-    date: '2024-01-11',
-    readTime: '10 分钟',
-    image: '⚛️',
-    views: 4200
-  },
-  {
-    id: 6,
-    title: 'TypeScript 入门教程',
-    excerpt: '从零开始学习 TypeScript，了解类型系统、接口、泛型等核心概念，提升代码质量。',
-    category: '教程',
-    author: '赵老师',
-    date: '2024-01-10',
-    readTime: '12 分钟',
-    image: '📘',
-    views: 3100
-  },
-  {
-    id: 7,
-    title: 'Python 数据分析实战',
-    excerpt: '使用 Python 进行数据分析的完整指南，包括 NumPy、Pandas 等库的使用技巧。',
-    category: '技术',
-    author: '数据科学家',
-    date: '2024-01-09',
+    author: 'DRGJU',
+    date: '2024-03-31',
     readTime: '15 分钟',
-    image: '🐍',
-    views: 2600
-  },
-  {
-    id: 8,
-    title: '健康生活的秘诀',
-    excerpt: '保持健康的生活方式需要良好的习惯，本文分享一些实用的健康建议。',
-    category: '生活',
-    author: '健康专家',
-    date: '2024-01-08',
-    readTime: '7 分钟',
-    image: '🥗',
-    views: 1500
+    image: '🐳',
+    views: 0
   }
 ];
 

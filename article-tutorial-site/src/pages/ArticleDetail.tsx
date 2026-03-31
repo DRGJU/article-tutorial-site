@@ -1,146 +1,251 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './ArticleDetail.css';
 
-interface Comment {
-  id: number;
-  author: string;
-  avatar: string;
-  content: string;
-  date: string;
-  likes: number;
-}
+// 模拟文章数据 - 后续可以根据实际需要从 API 获取
+const ARTICLES_DATA: Record<string, any> = {
+  '1': {
+    title: 'Docker 安装与配置完全指南',
+    content: `
+      <h2 id="intro">🐳 Docker 安装与配置完全指南</h2>
+      
+      <p>Docker 是一个开源的容器化平台，它让开发者可以将应用及其依赖打包到一个轻量级、可移植的容器中。本文将详细介绍 Docker 的安装、配置和使用方法。</p>
+      
+      <h3 id="what-is-docker">1️⃣ 什么是 Docker？</h3>
+      <p>Docker 使用容器化技术，让应用可以在隔离的环境中运行。与虚拟机相比，容器更加轻量级，启动速度更快，资源利用率更高。</p>
+      
+      <h3 id="windows-install">2️⃣ Windows 系统安装 Docker</h3>
+      
+      <h4 id="wsl2-requirement">前置要求：WSL 2</h4>
+      <p>Docker Desktop 需要 WSL 2（Windows Subsystem for Linux）支持。首先检查并安装 WSL 2：</p>
+      
+      <pre><code class="language-powershell"># 以管理员身份打开 PowerShell，执行：
+wsl --install
+
+# 查看已安装的 WSL 版本
+wsl --list --verbose
+
+# 设置 WSL 默认版本为 2
+wsl --set-default-version 2</code></pre>
+
+      <h4 id="docker-desktop-install">安装 Docker Desktop</h4>
+      <ol>
+        <li>访问 <a href="https://www.docker.com/products/docker-desktop" target="_blank">Docker 官网</a> 下载 Docker Desktop</li>
+        <li>运行安装程序，按照提示完成安装</li>
+        <li>启动 Docker Desktop，等待初始化完成</li>
+        <li>在终端验证安装：
+        <pre><code class="language-powershell">docker --version
+docker compose version</code></pre>
+        </li>
+      </ol>
+
+      <h3 id="macos-install">3️⃣ macOS 系统安装 Docker</h3>
+      
+      <h4 id="mac-intel">Intel 芯片 Mac</h4>
+      <pre><code class="language-bash"># 使用 Homebrew 安装
+brew install --cask docker
+
+# 或者从官网下载 .dmg 文件安装</code></pre>
+
+      <h4 id="mac-apple-silicon">Apple Silicon (M1/M2/M3) Mac</h4>
+      <pre><code class="language-bash"># 下载支持 Apple Silicon 的 Docker Desktop 版本
+# 官网会自动识别并提供对应版本</code></pre>
+
+      <h3 id="linux-install">4️⃣ Linux 系统安装 Docker</h3>
+      
+      <h4 id="ubuntu-install">Ubuntu/Debian</h4>
+      <pre><code class="language-bash"># 更新包索引
+sudo apt-get update
+
+# 安装必要的依赖
+sudo apt-get install ca-certificates curl gnupg lsb-release
+
+# 添加 Docker 官方 GPG 密钥
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# 添加 Docker 仓库
+echo \\
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \\
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# 安装 Docker Engine
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# 验证安装
+sudo docker run hello-world</code></pre>
+
+      <h4 id="centos-install">CentOS/RHEL</h4>
+      <pre><code class="language-bash"># 移除旧版本
+sudo yum remove docker docker-common docker-selinux docker-engine
+
+# 安装 yum 工具包
+sudo yum install -y yum-utils
+
+# 添加 Docker 仓库
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+# 安装 Docker
+sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# 启动 Docker
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# 验证安装
+sudo docker run hello-world</code></pre>
+
+      <h3 id="configuration">5️⃣ Docker 配置优化</h3>
+      
+      <h4 id="mirror-config">配置镜像加速器（中国大陆）</h4>
+      <p>编辑 Docker 配置文件 <code>/etc/docker/daemon.json</code>：</p>
+      <pre><code class="language-json">{
+  "registry-mirrors": [
+    "https://docker.mirrors.ustc.edu.cn",
+    "https://registry.docker-cn.com"
+  ],
+  "log-driver": "json-file",
+  "log-level": "warn",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  },
+  "bip": "172.18.0.1/24",
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "storage-driver": "overlay2",
+  "storage-opts": [
+    "overlay2.override_kernel_check=true"
+  ]
+}</code></pre>
+
+      <h4 id="restart-docker">重启 Docker 服务</h4>
+      <pre><code class="language-bash"># Linux
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+
+# Windows/Mac
+# 在 Docker Desktop 中点击 Restart 按钮</code></pre>
+
+      <h3 id="basic-commands">6️⃣ 常用 Docker 命令</h3>
+      
+      <h4 id="image-commands">镜像管理</h4>
+      <pre><code class="language-bash"># 搜索镜像
+docker search nginx
+
+# 拉取镜像
+docker pull nginx:latest
+
+# 查看本地镜像
+docker images
+
+# 删除镜像
+docker rmi &lt;image_id&gt;
+
+# 构建镜像
+docker build -t myimage:tag .</code></pre>
+
+      <h4 id="container-commands">容器管理</h4>
+      <pre><code class="language-bash"># 创建并启动容器
+docker run -d -p 8080:80 --name mycontainer nginx
+
+# 查看运行中的容器
+docker ps
+
+# 查看所有容器（包括已停止）
+docker ps -a
+
+# 停止容器
+docker stop &lt;container_id&gt;
+
+# 启动已停止的容器
+docker start &lt;container_id&gt;
+
+# 重启容器
+docker restart &lt;container_id&gt;
+
+# 删除容器
+docker rm &lt;container_id&gt;
+
+# 查看容器日志
+docker logs &lt;container_id&gt;
+
+# 进入容器
+docker exec -it &lt;container_id&gt; bash</code></pre>
+
+      <h3 id="best-practices">7️⃣ 最佳实践</h3>
+      
+      <ul>
+        <li><strong>使用官方镜像：</strong>优先选择官方维护的镜像，安全性更有保障</li>
+        <li><strong>指定版本标签：</strong>避免使用 latest 标签，明确指定版本号</li>
+        <li><strong>多阶段构建：</strong>减小最终镜像体积，提高安全性</li>
+        <li><strong>清理无用资源：</strong>定期清理停止的容器和悬空镜像
+        <pre><code class="language-bash"># 清理所有停止的容器
+docker container prune
+
+# 清理悬空镜像
+docker image prune
+
+# 清理所有未使用的资源
+docker system prune</code></pre>
+        </li>
+        <li><strong>使用 .dockerignore：</strong>排除不需要的文件，加快构建速度</li>
+        <li><strong>限制资源使用：</strong>为容器设置 CPU 和内存限制
+        <pre><code class="language-bash">docker run -d --memory="512m" --cpus="1.0" nginx</code></pre>
+        </li>
+      </ul>
+
+      <h3 id="troubleshooting">8️⃣ 常见问题解决</h3>
+      
+      <h4 id="permission-error">权限错误（Linux）</h4>
+      <pre><code class="language-bash"># 将当前用户添加到 docker 组
+sudo usermod -aG docker $USER
+
+# 重新登录或执行
+newgrp docker</code></pre>
+
+      <h4 id="wsl-error">WSL 2 相关错误（Windows）</h4>
+      <pre><code class="language-powershell"># 更新 WSL
+wsl --update
+
+# 重启 WSL
+wsl --shutdown
+
+# 在 Docker Desktop 中重新启用 WSL 2 集成</code></pre>
+
+      <h3 id="conclusion">📝 总结</h3>
+      <p>通过本文，您已经完成了 Docker 的安装和基础配置。接下来可以：</p>
+      <ul>
+        <li>学习编写 Dockerfile 创建自定义镜像</li>
+        <li>使用 Docker Compose 管理多容器应用</li>
+        <li>探索 Docker 网络和数据卷管理</li>
+        <li>了解容器编排工具如 Kubernetes</li>
+      </ul>
+      
+      <blockquote>
+        "容器化是现代化应用部署的关键技术，Docker 让这一切变得简单。"
+      </blockquote>
+      
+      <p>祝您使用 Docker 愉快！🎉</p>
+    `,
+    category: '技术',
+    author: 'DRGJU',
+    date: '2024-03-31',
+    readTime: '15 分钟',
+    image: '🐳',
+    tags: ['Docker', '容器化', 'DevOps', '教程'],
+    views: 0
+  }
+};
 
 const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const article = useMemo(() => ARTICLES_DATA[id || '1'] || ARTICLES_DATA['1'], [id]);
   const [tableOfContents, setTableOfContents] = useState<Array<{id: string, text: string, level: number}>>([]);
   const [activeSection, setActiveSection] = useState('');
-  const [comments, setComments] = useState<Comment[]>([
-    {
-      id: 1,
-      author: '小明',
-      avatar: '👨‍💻',
-      content: '这篇文章写得很好，学到了很多！感谢分享！',
-      date: '2024-01-16',
-      likes: 12
-    },
-    {
-      id: 2,
-      author: '李华',
-      avatar: '👩‍🎓',
-      content: '内容很实用，希望能多出一些这样的教程。',
-      date: '2024-01-15',
-      likes: 8
-    }
-  ]);
-  const [newComment, setNewComment] = useState('');
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-
-  // 模拟文章数据 - 后续可以根据实际需要从 API 获取
-  const articles: Record<string, any> = {
-    '1': {
-      title: '欢迎来到知识学堂',
-      content: `
-        <h2 id="welcome">🎉 欢迎来到知识学堂！</h2>
-        
-        <p>这是一个专注于分享优质文章和教程的平台。我们致力于为您提供高质量的学习内容，帮助您在各个领域快速成长。</p>
-        
-        <h3 id="mission">📚 我们的使命</h3>
-        <p>知识学堂的使命是让学习变得更加简单和高效。我们相信，通过分享优质的内容，可以帮助更多的人获取知识、提升技能。</p>
-        
-        <h3 id="features">✨ 平台特色</h3>
-        <ul>
-          <li><strong>高质量内容：</strong>每篇文章都经过精心筛选和审核</li>
-          <li><strong>多样化主题：</strong>涵盖技术、生活、学习等多个领域</li>
-          <li><strong>持续更新：</strong>定期发布新的教程和文章</li>
-          <li><strong>易于理解：</strong>用简洁明了的语言讲解复杂概念</li>
-        </ul>
-        
-        <h3 id="explore">🚀 开始探索</h3>
-        <p>现在就开始探索我们的文章库吧！无论您是想学习新技术，还是想提升生活质量，这里都会有您需要的内容。</p>
-        
-        <blockquote>
-          "知识就是力量，分享让力量传递。"
-        </blockquote>
-        
-        <p>感谢您的访问，祝您学习愉快！</p>
-      `,
-      category: '公告',
-      author: '管理员',
-      date: '2024-01-15',
-      readTime: '2 分钟',
-      image: '🎉',
-      tags: ['公告', '介绍', '欢迎'],
-      views: 1200
-    },
-    '2': {
-      title: '如何高效学习编程',
-      content: `
-        <h2 id="intro">💻 如何高效学习编程</h2>
-        
-        <p>学习编程是一段充满挑战但也极其有价值的旅程。本文将分享一些经过验证的高效学习方法，帮助您更快地掌握编程技能。</p>
-        
-        <h3 id="language">1️⃣ 选择合适的入门语言</h3>
-        <p>对于初学者，我推荐从以下语言开始：</p>
-        <ul>
-          <li><strong>Python：</strong>语法简洁，应用广泛</li>
-          <li><strong>JavaScript：</strong>Web 开发必备</li>
-          <li><strong>Java：</strong>企业级应用常用</li>
-        </ul>
-        
-        <h3 id="basics">2️⃣ 建立扎实的基础</h3>
-        <p>不要急于求成，要花时间理解基本概念：</p>
-        <ul>
-          <li>变量和数据类型</li>
-          <li>控制结构（条件语句、循环）</li>
-          <li>函数和方法</li>
-          <li>数据结构和算法</li>
-        </ul>
-        
-        <h3 id="practice">3️⃣ 实践项目驱动学习</h3>
-        <p>理论结合实践是最高效的学习方式。从小项目开始，逐步增加难度：</p>
-        <ul>
-          <li>待办事项列表应用</li>
-          <li>简单的计算器</li>
-          <li>个人博客网站</li>
-          <li>数据分析项目</li>
-        </ul>
-        
-        <h3 id="continuous">4️⃣ 保持持续学习</h3>
-        <p>技术日新月异，要保持学习的习惯：</p>
-        <ul>
-          <li>每天至少编码 30 分钟</li>
-          <li>阅读技术博客和文档</li>
-          <li>参与开源项目</li>
-          <li>加入技术社区</li>
-        </ul>
-        
-        <blockquote>
-          "编程不是关于你知道多少，而是关于你能用代码创造什么。"
-        </blockquote>
-        
-        <h3 id="tips">💡 小贴士</h3>
-        <ul>
-          <li>不要害怕犯错，错误是最好的老师</li>
-          <li>学会使用调试工具</li>
-          <li>多阅读他人的代码</li>
-          <li>教别人是巩固知识的最好方式</li>
-        </ul>
-        
-        <p>记住，每个人都是从零开始的。保持耐心，持续练习，您一定能够掌握编程技能！</p>
-      `,
-      category: '教程',
-      author: '张老师',
-      date: '2024-01-14',
-      readTime: '5 分钟',
-      image: '💻',
-      tags: ['编程', '学习', '教程'],
-      views: 3500
-    }
-  };
-
-  const article = articles[id || '1'] || articles['1'];
 
   // 提取目录
   useEffect(() => {
@@ -174,22 +279,6 @@ const ArticleDetail = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const handleAddComment = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    if (newComment.trim()) {
-      const comment: Comment = {
-        id: Date.now(),
-        author: '访客',
-        avatar: '👤',
-        content: newComment,
-        date: new Date().toISOString().split('T')[0],
-        likes: 0
-      };
-      setComments(prev => [comment, ...prev]);
-      setNewComment('');
-    }
-  }, [newComment]);
 
   const handleShare = useCallback((platform: string) => {
     const url = window.location.href;
@@ -230,53 +319,42 @@ const ArticleDetail = () => {
             </Link>
             
             <div className="article-header-content">
-              <span className="article-category-badge">{article.category}</span>
-              <h1 className="article-title">{article.title}</h1>
+              <div className="article-header-top">
+                <span className="article-category-badge">{article.category}</span>
+                <h1 className="article-title">{article.title}</h1>
+              </div>
               
               <div className="article-meta">
-                <div className="meta-item">
-                  <span className="meta-icon">👤</span>
-                  <span>{article.author}</span>
-                </div>
-                <div className="meta-item">
-                  <span className="meta-icon">📅</span>
-                  <span>{article.date}</span>
-                </div>
-                <div className="meta-item">
-                  <span className="meta-icon">⏱️</span>
-                  <span>{article.readTime}</span>
-                </div>
-                <div className="meta-item">
-                  <span className="meta-icon">👁️</span>
-                  <span>{article.views}</span>
-                </div>
-              </div>
-
-              {/* 分享按钮 */}
-              <div className="share-section">
-                <button 
-                  className="share-btn"
-                  onClick={() => setIsShareOpen(!isShareOpen)}
-                >
-                  🔗 分享文章
-                </button>
-                {isShareOpen && (
-                  <div className="share-menu slide-in">
-                    {shareLinks.map(link => (
-                      <button
-                        key={link.id}
-                        className="share-option"
-                        onClick={() => handleShare(link.id)}
-                      >
-                        <span className="share-icon">{link.icon}</span>
-                        <span>{link.name}</span>
-                      </button>
-                    ))}
-                    {copied && (
-                      <div className="copy-success">✅ 已复制链接</div>
+                <div className="meta-actions">
+                  <div className="share-section">
+                    <button 
+                      className="share-btn"
+                      onClick={() => setIsShareOpen(!isShareOpen)}
+                      aria-label="分享文章"
+                    >
+                      <span className="share-icon-btn">🔗</span>
+                      <span>分享</span>
+                    </button>
+                    {isShareOpen && (
+                      <div className="share-menu slide-in">
+                        {shareLinks.map(link => (
+                          <button
+                            key={link.id}
+                            className="share-option"
+                            onClick={() => handleShare(link.id)}
+                            type="button"
+                          >
+                            <span className="share-icon">{link.icon}</span>
+                            <span>{link.name}</span>
+                          </button>
+                        ))}
+                        {copied && (
+                          <div className="copy-success" role="status">✅ 已复制链接</div>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </header>
@@ -300,64 +378,7 @@ const ArticleDetail = () => {
                 <span key={index} className="tag">{tag}</span>
               ))}
             </div>
-
-            {/* 点赞和收藏 */}
-            <div className="article-actions">
-              <button className="action-btn-like">
-                👍 赞 ({article.views})
-              </button>
-              <button className="action-btn-collect">
-                ⭐ 收藏
-              </button>
-            </div>
           </div>
-
-          {/* 评论区 */}
-          <section className="comments-section">
-            <h2 className="comments-title">💬 评论 ({comments.length})</h2>
-            
-            {/* 发表评论 */}
-            <form onSubmit={handleAddComment} className="comment-form">
-              <textarea
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="写下你的评论..."
-                className="comment-input"
-                rows={4}
-                required
-              />
-              <div className="comment-form-footer">
-                <span className="comment-hint">支持 Markdown 语法</span>
-                <button type="submit" className="comment-submit">
-                  发表评论
-                </button>
-              </div>
-            </form>
-
-            {/* 评论列表 */}
-            <div className="comments-list">
-              {comments.map(comment => (
-                <div key={comment.id} className="comment-item fade-in">
-                  <div className="comment-avatar">{comment.avatar}</div>
-                  <div className="comment-content">
-                    <div className="comment-header">
-                      <span className="comment-author">{comment.author}</span>
-                      <span className="comment-date">{comment.date}</span>
-                    </div>
-                    <p className="comment-text">{comment.content}</p>
-                    <div className="comment-actions">
-                      <button className="comment-action-btn">
-                        👍 {comment.likes}
-                      </button>
-                      <button className="comment-action-btn">
-                        💬 回复
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
         </article>
 
         {/* 侧边栏目录 */}
@@ -390,7 +411,7 @@ const ArticleDetail = () => {
         <div className="container">
           <h2 className="related-title">相关阅读</h2>
           <div className="related-grid">
-            {Object.entries(articles)
+            {Object.entries(ARTICLES_DATA)
               .filter(([key]) => key !== id)
               .slice(0, 2)
               .map(([key, relatedArticle]: [string, any]) => (
