@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useMemo } from 'react';
+
 import './Home.css';
 
 const LEARNING_RESOURCES = [
