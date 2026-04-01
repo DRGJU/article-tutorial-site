@@ -3,9 +3,53 @@ import { useSearchParams } from 'react-router-dom';
 import './ArticleList.css';
 
 const CATEGORIES = ['全部', '教程', '技术', '生活', '公告'];
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 8;
 
 const ARTICLES_DATA = [
+  {
+    id: 9,
+    title: '深入理解计算机系统 - 程序员的计算机系统观',
+    excerpt: '基于 CSAPP 经典著作，系统讲解计算机系统的核心概念。从编译过程到内存管理，全面建立程序员的计算机系统观。',
+    category: '计算机系统',
+    author: 'DRGJU',
+    date: '2024-03-31',
+    readTime: '200 分钟',
+    image: '🖥️',
+    views: 0
+  },
+  {
+    id: 8,
+    title: '算法图解 - 轻松入门算法的可视化指南',
+    excerpt: '基于 Aditya Bhargava 经典著作，用图文并茂的方式系统讲解常用算法。从大 O 表示法到动态规划，让算法学习变得简单有趣。',
+    category: '算法入门',
+    author: 'DRGJU',
+    date: '2024-03-31',
+    readTime: '120 分钟',
+    image: '📊',
+    views: 0
+  },
+  {
+    id: 7,
+    title: '编程珠玑 - 编程艺术的经典智慧',
+    excerpt: '基于 Jon Bentley 经典著作，系统讲解编程中的核心思想和实用技巧。从问题定义到算法设计，从数据结构到性能优化，全面提升编程能力。',
+    category: '编程艺术',
+    author: 'DRGJU',
+    date: '2024-03-31',
+    readTime: '150 分钟',
+    image: '📚',
+    views: 0
+  },
+  {
+    id: 6,
+    title: '计算机科学概论 - 全面解读计算机科学的基石',
+    excerpt: '基于 Glenn Brookshear 经典著作，系统介绍计算机科学的核心概念和基础原理。从二进制到人工智能，从硬件到软件，带你全面了解计算机科学的完整知识体系。',
+    category: '计算机科学',
+    author: 'DRGJU',
+    date: '2024-03-31',
+    readTime: '180 分钟',
+    image: '💻',
+    views: 0
+  },
   {
     id: 1,
     title: 'Docker 安装与配置完全指南',
