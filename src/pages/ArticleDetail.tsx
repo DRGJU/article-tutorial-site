@@ -4,6 +4,2169 @@ import './ArticleDetail.css';
 
 // 模拟文章数据 - 后续可以根据实际需要从 API 获取
 const ARTICLES_DATA: Record<string, any> = {
+  '9': {
+    title: '深入理解计算机系统 - 程序员的计算机系统观',
+    content: `
+      <h2 id="intro">🖥️ 深入理解计算机系统 - 程序员的计算机系统观</h2>
+      
+      <p>本文基于 Randal E. Bryant 和 David R. O'Hallaron 的经典著作《深入理解计算机系统》（Computer Systems: A Programmer's Perspective，简称 CSAPP），系统讲解计算机系统的核心概念。这本书被誉为"程序员的圣经"，帮助你建立完整的计算机系统观，写出更高效、更可靠的程序。</p>
+      
+      <div class="learning-objectives">
+        <h3>📌 学习目标</h3>
+        <ul>
+          <li>理解程序的整个生命周期：从源代码到可执行文件</li>
+          <li>掌握数据的机器级表示和处理</li>
+          <li>理解计算机硬件架构和指令集</li>
+          <li>掌握内存层次结构和虚拟内存系统</li>
+          <li>理解异常控制流、进程和线程</li>
+          <li>学会系统级 I/O 和网络编程</li>
+          <li>能够优化程序性能，写出高质量代码</li>
+        </ul>
+      </div>
+
+      <h2 id="part1">第一部分：程序结构</h2>
+      
+      <h3 id="program-lifecycle">第 1 章：程序的整个生命周期</h3>
+      
+      <h4 id="hello-world">1.1 Hello World 的旅程</h4>
+      <p>一个简单的"Hello World"程序，揭示了计算机系统的核心原理。</p>
+      
+      <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main() {
+    printf("Hello, World!\\n");
+    return 0;
+}
+
+从源代码到运行的完整过程：
+
+1. 源程序（.c 文件）
+   ↓ 预处理
+2. 预处理后的源程序（.i 文件）
+   ↓ 编译
+3. 汇编程序（.s 文件）
+   ↓ 汇编
+4. 可重定位目标程序（.o 文件）
+   ↓ 链接
+5. 可执行程序
+   ↓ 加载执行
+6. 在屏幕上输出 "Hello, World!"</code></pre>
+
+      <h4 id="compilation-steps">1.2 编译过程详解</h4>
+      <pre><code class="language-bash"># 1. 预处理（Preprocessing）
+# 处理 #include、#define 等预处理指令
+gcc -E hello.c -o hello.i
+
+# 2. 编译（Compilation）
+# 将预处理后的文件转换为汇编代码
+gcc -S hello.i -o hello.s
+
+# 3. 汇编（Assembly）
+# 将汇编代码转换为机器码
+gcc -c hello.s -o hello.o
+
+# 4. 链接（Linking）
+# 将目标文件与库文件链接，生成可执行文件
+gcc hello.o -o hello
+
+# 一键完成所有步骤
+gcc hello.c -o hello</code></pre>
+
+      <h2 id="part2">第二部分：数据的机器级表示</h2>
+      
+      <h3 id="data-representation">第 2 章：信息的表示和处理</h3>
+      
+      <h4 id="number-systems">2.1 数制系统</h4>
+      <pre><code class="language-text">计算机中的数制：
+
+二进制（Base-2）：
+- 只使用 0 和 1
+- 计算机的基本语言
+- 示例：1011₂ = 1×2³ + 0×2² + 1×2¹ + 1×2⁰ = 11₁₀
+
+十进制（Base-10）：
+- 人类日常使用
+- 示例：255₁₀
+
+十六进制（Base-16）：
+- 用于简化二进制表示
+- 使用 0-9 和 A-F
+- 示例：0xFF = 255₁₀ = 11111111₂
+
+转换示例：
+十进制 → 二进制：25 ÷ 2 = 12 余 1
+                  12 ÷ 2 = 6  余 0
+                  6  ÷ 2 = 3  余 0
+                  3  ÷ 2 = 1  余 1
+                  1  ÷ 2 = 0  余 1
+结果：25₁₀ = 11001₂
+
+二进制 → 十六进制：
+1101 0101₂ = D5₁₆
+(1101=D, 0101=5)</code></pre>
+
+      <h4 id="integer-representation">2.2 整数表示</h4>
+      <pre><code class="language-text">整数的机器级表示：
+
+无符号整数（Unsigned）：
+- 所有位都表示数值
+- 范围：0 到 2^n - 1
+- 示例（8 位）：00000000 到 11111111 (0-255)
+
+有符号整数（Signed）：
+- 最高位为符号位（0 正，1 负）
+- 使用补码表示
+- 范围：-2^(n-1) 到 2^(n-1) - 1
+- 示例（8 位）：10000000 到 01111111 (-128 到 127)
+
+补码的优势：
+✓ 加法和减法使用相同的电路
+✓ 只有一个零的表示
+✓ 符号位可以参与运算
+
+示例（8 位补码）：
++5 = 00000101
+-5 = 11111011（按位取反 +1）
+
+计算 5 + (-5)：
+  00000101
++ 11111011
+──────────
+ 100000000
+丢弃溢出位 → 00000000 = 0 ✓</code></pre>
+
+      <h4 id="floating-point">2.3 浮点数表示</h4>
+      <pre><code class="language-text">IEEE 754 浮点数标准：
+
+单精度浮点数（32 位）：
+┌─┬─────────┬───────────────────────┐
+│S│ 指数 E  │    尾数 M             │
+├─┼─────────┼───────────────────────┤
+│1│   8 位   │      23 位            │
+└─┴─────────┴───────────────────────┘
+
+双精度浮点数（64 位）：
+┌─┬──────────┬────────────────────────┐
+│S│  指数 E   │      尾数 M            │
+├─┼──────────┼────────────────────────┤
+│1│  11 位    │       52 位            │
+└─┴──────────┴────────────────────────┘
+
+值 = (-1)^S × M × 2^E
+
+示例：-118.625 的表示
+1. 符号位：S = 1（负数）
+2. 转换为二进制：118.625₁₀ = 1110110.101₂
+3. 规格化：1.110110101 × 2^6
+4. 指数：E = 6 + 127 = 133 = 10000101₂
+5. 尾数：11011010100...（23 位）
+
+结果：
+1 10000101 11011010100000000000000
+
+特殊值：
+- 零：指数和尾数都为 0
+- 无穷大：指数全 1，尾数全 0
+- NaN：指数全 1，尾数非 0</code></pre>
+
+      <h2 id="part3">第三部分：机器级程序表示</h2>
+      
+      <h3 id="machine-code">第 3 章：程序的机器级表示</h3>
+      
+      <h4 id="assembly-basics">3.1 汇编语言基础</h4>
+      <pre><code class="language-asm">x86-64 汇编基础：
+
+寄存器：
+%rax    累加寄存器
+%rbx    基址寄存器
+%rcx    计数寄存器
+%rdx    数据寄存器
+%rsi    源变址寄存器
+%rdi    目的变址寄存器
+%rsp    栈指针
+%rbp    基址指针
+%rip    指令指针
+
+数据传送指令：
+movq    传送 8 字节（64 位）
+movl    传送 4 字节（32 位）
+movw    传送 2 字节（16 位）
+movb    传送 1 字节（8 位）
+
+示例：
+movq %rax, %rbx      # 将 rax 的值传送到 rbx
+movq $100, %rax      # 将立即数 100 传送到 rax
+movq (%rax), %rbx    # 将 rax 指向的内存值传送到 rbx
+
+算术运算：
+addq %rax, %rbx      # rbx = rbx + rax
+subq %rax, %rbx      # rbx = rbx - rax
+imulq %rax, %rbx     # rbx = rbx * rax
+idivq %rbx           # rdx:rax / rbx</code></pre>
+
+      <h4 id="control-flow">3.2 控制流</h4>
+      <pre><code class="language-asm">条件码寄存器：
+ZF    零标志（结果为零时置 1）
+SF    符号标志（结果为负时置 1）
+CF    进位标志（无符号溢出）
+OF    溢出标志（有符号溢出）
+
+比较指令：
+cmpq %rax, %rbx      # 计算 rbx - rax，设置条件码
+testq %rax, %rbx     # 计算 rbx & rax，设置条件码
+
+跳转指令：
+jmp    无条件跳转
+je     相等时跳转（ZF=1）
+jne    不相等时跳转（ZF=0）
+jl     小于时跳转（有符号）
+jg     大于时跳转（有符号）
+jb     低于时跳转（无符号）
+ja     高于时跳转（无符号）
+
+if-else 的汇编实现：
+C 代码：
+if (x > y) {
+    result = x - y;
+} else {
+    result = y - x;
+}
+
+汇编代码：
+    cmpq    %rdx, %rdi      # 比较 x 和 y
+    jle     .else           # 如果 x <= y，跳转到 else
+    subq    %rdx, %rdi      # result = x - y
+    movq    %rdi, %rax
+    jmp     .end
+.else:
+    subq    %rdi, %rdx      # result = y - x
+    movq    %rdx, %rax
+.end:
+    ret</code></pre>
+
+      <h2 id="part4">第四部分：处理器架构</h2>
+      
+      <h3 id="processor-architecture">第 4 章：处理器体系结构</h3>
+      
+      <h4 id="von-neumann">4.1 冯·诺依曼架构</h4>
+      <pre><code class="language-text">冯·诺依曼计算机模型：
+
+        ┌─────────────────┐
+        │     CPU         │
+        │  ┌─────┬─────┐  │
+        │  │ ALU │  PC │  │
+        │  ├─────┼─────  │
+        │  │Registers│  │
+        │  └─────┴─────┘  │
+        └────────┬────────┘
+                 │
+        ┌────────┴────────
+        │     内存         │
+        │  程序 + 数据     │
+        └─────────────────┘
+
+CPU 的主要组件：
+1. 算术逻辑单元（ALU）
+   - 执行算术运算（加、减、乘、除）
+   - 执行逻辑运算（与、或、非）
+
+2. 程序计数器（PC）
+   - 存储下一条要执行的指令地址
+
+3. 寄存器文件
+   - 存储当前操作的数据
+   - 快速访问的存储单元
+
+4. 控制单元
+   - 从内存取指令
+   - 解码指令
+   - 执行指令</code></pre>
+
+      <h4 id="instruction-execution">4.2 指令执行周期</h4>
+      <pre><code class="language-text">指令执行的基本步骤：
+
+1. 取指（Fetch）
+   - 从 PC 指向的内存位置读取指令
+   - PC 更新为下一条指令地址
+
+2. 译码（Decode）
+   - 解析指令，确定操作类型
+   - 读取寄存器操作数
+
+3. 执行（Execute）
+   - ALU 执行运算
+   - 计算内存地址
+
+4. 访存（Memory）
+   - 读取或写入数据内存
+
+5. 写回（Write Back）
+   - 将结果写入寄存器
+
+示例：addq (%rax), %rbx
+取指：读取 addq 指令
+译码：识别为内存到寄存器的加法
+执行：读取 rax 的值作为地址
+访存：从该地址读取数据
+写回：将读取的数据加到 rbx</code></pre>
+
+      <h2 id="part5">第五部分：内存层次结构</h2>
+      
+      <h3 id="memory-hierarchy">第 5 章：内存层次结构</h3>
+      
+      <h4 id="cache-memory">5.1 高速缓存</h4>
+      <pre><code class="language-text">缓存的基本原理：
+
+时间局部性：
+- 如果一个位置被访问，它很可能再次被访问
+- 示例：循环变量
+
+空间局部性：
+- 如果一个位置被访问，它附近的位置也可能被访问
+- 示例：数组遍历
+
+缓存组织结构：
+┌────────────────────────────────┐
+│          主内存                 │
+│      (DRAM, 较大，较慢)         │
+└──────────────┬─────────────────┘
+               │
+┌──────────────┴─────────────────┐
+│          L3 缓存               │
+│    (共享，较大，较慢)           │
+└──────────────┬─────────────────┘
+               │
+┌──────────────┴─────────────────┐
+│          L2 缓存               │
+│    (私有，中等，中等)           │
+└──────────────┬─────────────────┘
+               │
+┌──────────────┴─────────────────┐
+│          L1 缓存               │
+│    (私有，较小，最快)           │
+└──────────────┬─────────────────┘
+               │
+┌──────────────┴─────────────────┐
+│          CPU 寄存器             │
+│      (最小，最快)               │
+└────────────────────────────────┘
+
+缓存命中与未命中：
+命中（Hit）：数据在缓存中
+- 快速访问
+- 命中时间：访问缓存的时间
+
+未命中（Miss）：数据不在缓存中
+- 需要从主内存加载
+- 未命中惩罚：额外的访问时间</code></pre>
+
+      <h4 id="cache-optimization">5.2 缓存优化</h4>
+      <pre><code class="language-text">提高缓存命中率的技巧：
+
+1. 数据布局优化
+坏的例子（行优先 vs 列优先）：
+// 低效：按列访问，缓存不友好
+for (j = 0; j < N; j++)
+    for (i = 0; i < N; i++)
+        sum += array[i][j];  // 跨行访问
+
+// 高效：按行访问，缓存友好
+for (i = 0; i < N; i++)
+    for (j = 0; j < N; j++)
+        sum += array[i][j];  // 顺序访问
+
+2. 循环分块（Blocking）
+将大数组分成小块处理：
+for (ii = 0; ii < N; ii += BLOCK_SIZE)
+    for (jj = 0; jj < N; jj += BLOCK_SIZE)
+        for (i = ii; i < min(ii+BLOCK_SIZE, N); i++)
+            for (j = jj; j < min(jj+BLOCK_SIZE, N); j++)
+                C[i][j] = A[i][k] * B[k][j];
+
+3. 减少不必要的数据移动
+- 使用寄存器变量
+- 避免重复加载相同数据</code></pre>
+
+      <h2 id="part6">第六部分：虚拟内存</h2>
+      
+      <h3 id="virtual-memory">第 6 章：虚拟内存系统</h3>
+      
+      <h4 id="vm-concepts">6.1 虚拟内存概念</h4>
+      <pre><code class="language-text">虚拟内存的核心思想：
+
+每个进程都有自己独立的虚拟地址空间
+虚拟地址 → 物理地址的转换由 MMU 完成
+
+虚拟地址空间布局（64 位）：
+高地址 ┌─────────────────┐
+        │   内核空间       │
+        │  (保留给系统)    │
+        ├─────────────────┤
+        │                  │
+        │      栈          │
+        │      ↓           │
+        │                  │
+        ├─────────────────┤
+        │      堆          │
+        │      ↑           │
+        │                  │
+        ├─────────────────┤
+        │  共享库          │
+        │  (.so, .dll)     │
+        ├─────────────────┤
+        │  BSS 段          │
+        │  (未初始化数据)  │
+        ├─────────────────┤
+        │  数据段          │
+        │  (已初始化数据)  │
+        ├─────────────────┤
+        │  代码段          │
+        │  (.text)         │
+低地址 └─────────────────┘
+
+页表：
+- 虚拟页号 → 物理页框号的映射
+- 由操作系统维护
+- TLB（Translation Lookaside Buffer）加速转换</code></pre>
+
+      <h4 id="memory-management">6.2 内存管理</h4>
+      <pre><code class="language-c">动态内存分配：
+
+malloc - 分配内存
+void *malloc(size_t size);
+示例：int *arr = (int*)malloc(100 * sizeof(int));
+
+free - 释放内存
+void free(void *ptr);
+示例：free(arr);
+
+calloc - 分配并初始化为 0
+void *calloc(size_t nmemb, size_t size);
+示例：int *arr = (int*)calloc(100, sizeof(int));
+
+realloc - 重新分配
+void *realloc(void *ptr, size_t size);
+示例：arr = (int*)realloc(arr, 200 * sizeof(int));
+
+常见内存错误：
+✗ 内存泄漏：分配后未释放
+✗ 悬空指针：释放后继续使用
+✗ 缓冲区溢出：访问超出分配范围
+✗ 重复释放：多次释放同一块内存
+
+最佳实践：
+✓ 谁分配，谁释放
+✓ 释放后立即置为 NULL
+✓ 检查返回值是否为 NULL
+✓ 使用 valgrind 检测内存问题</code></pre>
+
+      <h2 id="part7">第七部分：异常控制流</h2>
+      
+      <h3 id="exceptional-control-flow">第 7 章：异常控制流</h3>
+      
+      <h4 id="exceptions">7.1 异常处理</h4>
+      <pre><code class="language-text">异常的类型：
+
+1. 中断（Interrupt）
+   - 来自 I/O 设备的异步信号
+   - 示例：键盘输入、网络数据包到达
+   - 处理完后返回原程序
+
+2. 陷阱（Trap）
+   - 同步异常，由指令执行引起
+   - 示例：系统调用、断点
+   - 有意为之，可恢复
+
+3. 故障（Fault）
+   - 同步异常，可能可恢复
+   - 示例：缺页异常
+   - 修复后重新执行指令
+
+4. 终止（Abort）
+   - 同步异常，不可恢复
+   - 示例：硬件错误、内存校验错误
+   - 程序终止
+
+异常处理流程：
+1. 检测到异常
+2. 保存当前上下文
+3. 跳转到异常处理程序
+4. 执行处理
+5. 恢复上下文（如果可能）
+6. 返回或终止</code></pre>
+
+      <h4 id="processes">7.2 进程</h4>
+      <pre><code class="language-c">进程控制：
+
+fork - 创建子进程
+pid_t fork(void);
+返回值：
+- 0：在子进程中
+- 子进程 PID：在父进程中
+- -1：错误
+
+示例：
+pid_t pid = fork();
+if (pid == 0) {
+    // 子进程代码
+    printf("Child process\\n");
+} else if (pid > 0) {
+    // 父进程代码
+    printf("Parent process\\n");
+    wait(NULL);  // 等待子进程
+} else {
+    // 错误处理
+    perror("fork failed");
+}
+
+exec - 执行新程序
+execl("/bin/ls", "ls", "-l", NULL);
+execv("/bin/ls", args);
+
+wait - 等待进程结束
+pid_t wait(int *status);
+pid_t waitpid(pid_t pid, int *status, int options);</code></pre>
+
+      <h2 id="part8">第八部分：系统级 I/O</h2>
+      
+      <h3 id="system-io">第 8 章：系统级输入/输出</h3>
+      
+      <h4 id="unix-io">8.1 Unix I/O</h4>
+      <pre><code class="language-c">Unix I/O 模型：
+
+所有 I/O 设备都映射为文件
+打开文件 → 读写文件 → 关闭文件
+
+文件描述符：
+0 - 标准输入（stdin）
+1 - 标准输出（stdout）
+2 - 标准错误（stderr）
+3+ - 打开的文件
+
+系统调用：
+open - 打开文件
+int open(const char *pathname, int flags, mode_t mode);
+
+read - 读取数据
+ssize_t read(int fd, void *buf, size_t count);
+
+write - 写入数据
+ssize_t write(int fd, const void *buf, size_t count);
+
+close - 关闭文件
+int close(int fd);
+
+lseek - 移动文件位置
+off_t lseek(int fd, off_t offset, int whence);
+
+示例：复制文件
+int fd_in = open("input.txt", O_RDONLY);
+int fd_out = open("output.txt", O_WRONLY | O_CREAT, 0644);
+char buffer[1024];
+ssize_t n;
+while ((n = read(fd_in, buffer, sizeof(buffer))) > 0) {
+    write(fd_out, buffer, n);
+}
+close(fd_in);
+close(fd_out);</code></pre>
+
+      <h2 id="part9">第九部分：网络编程</h2>
+      
+      <h3 id="network-programming">第 9 章：网络编程基础</h3>
+      
+      <h4 id="socket-programming">9.1 Socket 编程</h4>
+      <pre><code class="language-c">TCP Socket 编程：
+
+服务器端：
+// 1. 创建 socket
+int listenfd = socket(AF_INET, SOCK_STREAM, 0);
+
+// 2. 绑定地址
+struct sockaddr_in server_addr;
+server_addr.sin_family = AF_INET;
+server_addr.sin_addr.s_addr = INADDR_ANY;
+server_addr.sin_port = htons(8080);
+bind(listenfd, (struct sockaddr*)&server_addr, sizeof(server_addr));
+
+// 3. 开始监听
+listen(listenfd, SOMAXCONN);
+
+// 4. 接受连接
+int connfd = accept(listenfd, NULL, NULL);
+
+// 5. 读写数据
+read(connfd, buffer, sizeof(buffer));
+write(connfd, response, strlen(response));
+
+// 6. 关闭连接
+close(connfd);
+
+客户端：
+// 1. 创建 socket
+int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+
+// 2. 连接服务器
+struct sockaddr_in server_addr;
+server_addr.sin_family = AF_INET;
+server_addr.sin_port = htons(8080);
+inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr);
+connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr));
+
+// 3. 发送请求
+write(sockfd, request, strlen(request));
+
+// 4. 接收响应
+read(sockfd, buffer, sizeof(buffer));
+
+// 5. 关闭连接
+close(sockfd);</code></pre>
+
+      <div class="final-message">
+        <h3>🎉 恭喜完成《深入理解计算机系统》学习之旅！</h3>
+        <p>通过本书的学习，你掌握了：</p>
+        <ul>
+          <li><strong>程序结构：</strong>从源代码到可执行文件的完整过程</li>
+          <li><strong>数据表示：</strong>整数、浮点数的机器级表示</li>
+          <li><strong>机器代码：</strong>汇编语言和处理器架构</li>
+          <li><strong>内存系统：</strong>缓存、虚拟内存、内存管理</li>
+          <li><strong>异常控制流：</strong>进程、信号、系统调用</li>
+          <li><strong>I/O 系统：</strong>文件 I/O、网络编程</li>
+        </ul>
+        <p><strong>深入理解计算机系统的精髓在于：建立完整的计算机系统观，理解程序如何在计算机上运行，从而写出更高效、更可靠的程序。</strong></p>
+        
+        <h4>📚 推荐进一步学习</h4>
+        <ul>
+          <li>《深入理解计算机系统》（CSAPP）- Randal E. Bryant, David R. O'Hallaron</li>
+          <li>《计算机系统要素》- 杨季文</li>
+          <li>《计算机组成与设计》- David A. Patterson, John L. Hennessy</li>
+          <li>《操作系统导论》- Remzi H. Arpaci-Dusseau</li>
+          <li>《UNIX 环境高级编程》- W. Richard Stevens</li>
+          <li>CMU 15-213 课程实验（CSAPP Labs）</li>
+        </ul>
+      </div>
+    `,
+    category: '计算机系统',
+    readTime: '200 分钟',
+    image: '🖥️',
+    tags: ['深入理解计算机系统', 'CSAPP', '计算机系统', '汇编', '内存管理', '操作系统', '完整教程']
+  },
+  '8': {
+    title: '算法图解 - 轻松入门算法的可视化指南',
+    content: `
+      <h2 id="intro">📊 算法图解 - 轻松入门算法的可视化指南</h2>
+      
+      <p>本文基于 Aditya Bhargava 的经典著作《算法图解》（Grokking Algorithms），用图文并茂的方式系统讲解常用算法。这本书以直观的例子和清晰的图示，让算法学习变得简单有趣，非常适合算法初学者。</p>
+      
+      <div class="learning-objectives">
+        <h3>📌 学习目标</h3>
+        <ul>
+          <li>理解算法的基本概念和重要性</li>
+          <li>掌握大 O 表示法和算法复杂度分析</li>
+          <li>学会常用数据结构：数组、链表、栈、队列、树、图、散列表</li>
+          <li>掌握经典算法：二分查找、选择排序、快速排序、广度优先搜索、深度优先搜索、Dijkstra 算法</li>
+          <li>理解动态规划和贪心算法的思想</li>
+          <li>能够分析和选择合适的算法解决实际问题</li>
+        </ul>
+      </div>
+
+      <h2 id="part1">第一部分：算法基础</h2>
+      
+      <h3 id="algorithm-intro">第 1 章：什么是算法</h3>
+      
+      <h4 id="what-is-algorithm">1.1 算法的定义</h4>
+      <p>算法是一组完成任务的指令。任何代码片段都可视为算法。</p>
+      
+      <p><strong>算法的特点：</strong></p>
+      <ul>
+        <li><strong>有穷性：</strong>算法必须在执行有限步后结束</li>
+        <li><strong>确定性：</strong>每一步都有确切的含义</li>
+        <li><strong>输入：</strong>有零个或多个输入</li>
+        <li><strong>输出：</strong>有一个或多个输出</li>
+        <li><strong>可行性：</strong>每一步都可以通过有限次基本操作完成</li>
+      </ul>
+      
+      <p><strong>为什么学习算法？</strong></p>
+      <ul>
+        <li>提高编程能力和问题解决能力</li>
+        <li>编写更高效的代码</li>
+        <li>通过技术面试的必备知识</li>
+        <li>理解计算机科学的核心思想</li>
+      </ul>
+
+      <h4 id="big-o-notation">1.2 大 O 表示法</h4>
+      <p>大 O 表示法用于描述算法的执行时间随输入规模增长的趋势。</p>
+      
+      <pre><code class="language-text">常见的时间复杂度（从快到慢）：
+
+O(1) - 常数时间
+  示例：访问数组元素、散列表查找
+  说明：无论数据规模多大，执行时间都相同
+
+O(log n) - 对数时间
+  示例：二分查找
+  说明：数据规模翻倍，执行时间只增加一次操作
+
+O(n) - 线性时间
+  示例：简单查找、遍历数组
+  说明：执行时间与数据规模成正比
+
+O(n log n) - 线性对数时间
+  示例：快速排序、归并排序
+  说明：比线性稍慢，但仍然是高效的
+
+O(n²) - 平方时间
+  示例：选择排序、冒泡排序
+  说明：数据规模翻倍，执行时间变为 4 倍
+
+O(n!) - 阶乘时间
+  示例：旅行商问题（穷举法）
+  说明：非常慢，应尽量避免</code></pre>
+      
+      <p><strong>理解大 O 的要点：</strong></p>
+      <ul>
+        <li>关注最坏情况，而非平均情况</li>
+        <li>忽略常数项和低阶项</li>
+        <li>关注增长趋势，而非具体时间</li>
+      </ul>
+
+      <h2 id="part2">第二部分：基础数据结构</h2>
+      
+      <h3 id="arrays-linked-lists">第 2 章：数组和链表</h3>
+      
+      <h4 id="arrays">2.1 数组</h4>
+      <p>数组是最基本的数据结构，元素在内存中连续存储。</p>
+      
+      <pre><code class="language-text">数组的特点：
+✓ 支持随机访问，通过索引快速读取元素 O(1)
+✗ 插入/删除元素慢，需要移动其他元素 O(n)
+✗ 大小固定，创建时需要指定长度
+✓ 内存紧凑，缓存友好
+
+示意图：
+┌─────┬─────┬─────┬─────┬─────┐
+│  5  │  3  │  8  │  1  │  9  │
+└──────────┴──────────┴─────
+  0     1     2     3     4    ← 索引
+
+访问 array[2]：直接定位到地址 + 2×元素大小，O(1)</code></pre>
+
+      <h4 id="linked-lists">2.2 链表</h4>
+      <p>链表的元素在内存中分散存储，每个元素包含指向下一个元素的指针。</p>
+      
+      <pre><code class="language-text">链表的特点：
+✗ 不支持随机访问，必须从头遍历 O(n)
+✓ 插入/删除元素快，只需修改指针 O(1)
+✓ 大小动态，可随时添加元素
+✗ 内存不连续，缓存不友好
+
+示意图：
+┌─────┐    ┌─────┐    ┌─────    ┌─────┐
+│  5  │───→│  3  │───→│  8  │───→│  1  │
+│  ●  │    │  ●  │    │  ●  │    │  ●  │
+└─────    └─────┘    └─────┘    └─────┘
+  ↑          ↑          ↑          ↑
+ 数据       数据       数据       数据
+ 指针       指针       指针       指针
+
+在头部插入元素 10：
+1. 创建新节点
+2. 新节点指针指向原头节点
+3. 更新头指针
+只需 3 步操作，O(1)</code></pre>
+
+      <h4 id="comparison">2.3 数组 vs 链表</h4>
+      <pre><code class="language-text">操作对比：
+                数组      链表
+读取元素        O(1)      O(n)
+插入元素        O(n)      O(1)
+删除元素        O(n)      O(1)
+
+使用场景：
+- 需要频繁读取 → 选择数组
+- 需要频繁插入/删除 → 选择链表
+- 不确定数据规模 → 选择链表或动态数组</code></pre>
+
+      <h3 id="stacks-queues">第 3 章：栈和队列</h3>
+      
+      <h4 id="stacks">3.1 栈（Stack）</h4>
+      <p>栈是后进先出（LIFO）的数据结构。</p>
+      
+      <pre><code class="language-text">栈的操作：
+- push：入栈（压栈）
+- pop：出栈（弹栈）
+- peek：查看栈顶元素
+
+示意图：
+      ← 栈顶
+    ┌─────┐
+    │  C  │  ← 最后入栈
+    ├─────┤
+    │  B  │
+    ├─────┤
+    │  A  │  ← 最先入栈
+    └─────┘
+
+应用场景：
+- 函数调用栈
+- 撤销操作（Ctrl+Z）
+- 浏览器后退按钮
+- 表达式求值</code></pre>
+
+      <h4 id="queues">3.2 队列（Queue）</h4>
+      <p>队列是先进先出（FIFO）的数据结构。</p>
+      
+      <pre><code class="language-text">队列的操作：
+- enqueue：入队
+- dequeue：出队
+
+示意图：
+入队 → ┌──────────┬───── → 出队
+      │  A  │  B  │  C  │
+      └─────┴─────┴─────┘
+      先入              先出
+
+应用场景：
+- 打印任务队列
+- 消息队列
+- 广度优先搜索
+- 任务调度</code></pre>
+
+      <h2 id="part3">第三部分：查找和排序</h2>
+      
+      <h3 id="binary-search">第 4 章：二分查找</h3>
+      
+      <h4 id="how-it-works">4.1 工作原理</h4>
+      <p>二分查找是一种高效的查找算法，但要求数据必须有序。</p>
+      
+      <pre><code class="language-text">算法步骤：
+1. 取中间位置的元素
+2. 如果等于目标值，返回位置
+3. 如果大于目标值，在左半部分继续查找
+4. 如果小于目标值，在右半部分继续查找
+5. 重复步骤 1-4，直到找到或范围为空
+
+示意图：查找 7
+数组：[1, 3, 5, 7, 9, 11, 13, 15]
+      ↑                    ↑
+     low                 high
+
+第 1 次：mid = 3 (值=7)，找到！
+
+如果查找 6：
+第 1 次：mid = 3 (值=7)，7 > 6，在左半部分
+        [1, 3, 5, 7]
+         ↑     ↑
+        low   high
+        
+第 2 次：mid = 1 (值=3)，3 < 6，在右半部分
+        [5, 7]
+         ↑  ↑
+        low high
+        
+第 3 次：mid = 0 (值=5)，5 < 6，在右半部分
+        [7]
+         ↑
+        low=high
+        
+第 4 次：low > high，未找到
+
+时间复杂度：O(log n)
+100 个元素 → 最多 7 次
+10 亿个元素 → 最多 30 次</code></pre>
+
+      <h3 id="selection-sort">第 5 章：选择排序</h3>
+      
+      <h4 id="selection-sort-algo">5.1 算法原理</h4>
+      <pre><code class="language-text">选择排序思路：
+1. 从未排序部分找到最小元素
+2. 将其放到已排序部分的末尾
+3. 重复步骤 1-2，直到所有元素排序完成
+
+示意图：
+初始：[5, 3, 8, 1, 9]
+
+第 1 轮：找到最小值 1，与第 1 个元素交换
+       [1, 3, 8, 5, 9]
+        ↑ 已排序
+
+第 2 轮：找到最小值 3，已在正确位置
+       [1, 3, 8, 5, 9]
+        ↑ ↑ 已排序
+
+第 3 轮：找到最小值 5，与第 3 个元素交换
+       [1, 3, 5, 8, 9]
+        ↑ ↑ ↑ 已排序
+
+第 4 轮：找到最小值 8，已在正确位置
+       [1, 3, 5, 8, 9]
+        ↑ ↑ ↑ ↑ 已排序
+
+完成：[1, 3, 5, 8, 9]
+
+时间复杂度：O(n²)
+空间复杂度：O(1)</code></pre>
+
+      <h3 id="quicksort">第 6 章：快速排序</h3>
+      
+      <h4 id="quicksort-algo">6.1 分治思想</h4>
+      <p>快速排序使用分治法（Divide and Conquer）策略。</p>
+      
+      <pre><code class="language-text">快速排序步骤：
+1. 选择基准值（pivot）
+2. 分区：小于基准值的放左边，大于的放右边
+3. 递归地对左右子数组进行快速排序
+
+示意图：
+数组：[5, 3, 8, 1, 9, 2, 7]
+
+第 1 轮：选择 pivot = 5
+       [3, 1, 2]  [5]  [8, 9, 7]
+        < 5        =       > 5
+
+第 2 轮：递归排序左右子数组
+       左：[3, 1, 2], pivot = 3
+          [1, 2]  [3]  []
+       
+       右：[8, 9, 7], pivot = 8
+          []  [8]  [9, 7]
+
+第 3 轮：继续递归
+       [1, 2] → [1]  [2]
+       [9, 7] → [7]  [9]
+
+合并：[1, 2, 3, 5, 7, 8, 9]
+
+时间复杂度：
+- 平均：O(n log n)
+- 最坏：O(n²)（已经有序时）
+空间复杂度：O(log n)（递归栈）</code></pre>
+
+      <h2 id="part4">第四部分：图算法</h2>
+      
+      <h3 id="graphs">第 7 章：图的基本概念</h3>
+      
+      <h4 id="graph-basics">7.1 图的组成</h4>
+      <pre><code class="language-text">图由节点（vertex）和边（edge）组成：
+
+      A
+     / \\
+    B---C
+     \\ /
+      D
+
+节点：A, B, C, D
+边：(A,B), (A,C), (B,C), (B,D), (C,D)
+
+图的类型：
+1. 无向图：边没有方向（如友谊关系）
+2. 有向图：边有方向（如关注关系）
+3. 加权图：边有权重（如距离、时间）</code></pre>
+
+      <h3 id="bfs">第 8 章：广度优先搜索（BFS）</h3>
+      
+      <h4 id="bfs-algo">8.1 算法原理</h4>
+      <p>BFS 用于查找图中两个节点之间的最短路径。</p>
+      
+      <pre><code class="language-text">BFS 步骤：
+1. 将起始节点加入队列
+2. 从队列取出一个节点
+3. 检查该节点的所有邻居
+4. 将未访问的邻居加入队列
+5. 重复步骤 2-4，直到找到目标或队列为空
+
+示意图：查找 A 到 G 的最短路径
+
+      A
+     / \\
+    B   C
+   / \\   \\
+  D   E   F
+   \\ /   /
+     G
+
+执行过程：
+队列：[A]
+访问：A
+
+队列：[B, C]
+访问：A, B, C
+
+队列：[C, D, E]
+访问：A, B, C, D
+
+队列：[D, E, F]
+访问：A, B, C, D, E
+
+队列：[E, F, G] ← 找到 G！
+访问：A, B, C, D, E, F
+
+最短路径：A → C → F → G
+
+时间复杂度：O(V + E)
+V = 节点数，E = 边数</code></pre>
+
+      <h3 id="dijkstra">第 9 章：Dijkstra 算法</h3>
+      
+      <h4 id="dijkstra-algo">9.1 加权图最短路径</h4>
+      <p>Dijkstra 算法用于在加权图中查找最短路径。</p>
+      
+      <pre><code class="language-text">Dijkstra 算法步骤：
+1. 找出最"便宜"的节点（开销最小）
+2. 更新该节点所有邻居的开销
+3. 重复步骤 1-2，直到所有节点都被处理
+4. 计算最终路径
+
+示意图：
+
+      A
+    6/ \\1
+    B---C
+    2\\ /3
+      D
+
+从 A 到 D 的最短路径：
+
+初始化：
+A 的开销 = 0
+B 的开销 = ∞
+C 的开销 = ∞
+D 的开销 = ∞
+
+处理 A：
+B 的开销 = 0 + 6 = 6
+C 的开销 = 0 + 1 = 1
+
+处理 C（最便宜）：
+D 的开销 = 1 + 3 = 4
+B 的开销 = min(6, 1+2) = 3
+
+处理 B：
+D 的开销 = min(4, 3+2) = 4
+
+处理 D：
+完成！
+
+最短路径：A → C → D，总开销 = 4
+
+时间复杂度：O(V²)（使用数组）
+           O(E + V log V)（使用最小堆）</code></pre>
+
+      <h2 id="part5">第五部分：高级算法</h2>
+      
+      <h3 id="dynamic-programming">第 10 章：动态规划</h3>
+      
+      <h4 id="dp-concept">10.1 核心思想</h4>
+      <p>动态规划通过将复杂问题分解为子问题，并保存子问题的解来避免重复计算。</p>
+      
+      <pre><code class="language-text">动态规划的特征：
+1. 最优子结构：问题的最优解包含子问题的最优解
+2. 重叠子问题：子问题会被重复计算
+3. 状态转移方程：定义如何从子问题得到原问题的解
+
+经典案例：背包问题
+
+问题：背包容量 4 磅，有以下物品：
+吉他（1 磅，价值 1500）
+音响（4 磅，价值 3000）
+笔记本电脑（3 磅，价值 2000）
+
+如何装包使总价值最大？
+
+动态规划解法：
+创建表格，行=物品，列=背包容量
+
+       1 磅   2 磅   3 磅   4 磅
+吉他   1500   1500   1500   1500
+音响   1500   1500   1500   3000
+电脑   1500   1500   2000   3500
+
+最优解：吉他 + 笔记本电脑 = 3500
+
+状态转移方程：
+cell[i][j] = max(
+  cell[i-1][j],  // 不选当前物品
+  value[i] + cell[i-1][j-weight[i]]  // 选当前物品
+)</code></pre>
+
+      <h3 id="greedy">第 11 章：贪心算法</h3>
+      
+      <h4 id="greedy-concept">11.1 算法思想</h4>
+      <p>贪心算法每一步都选择当前最优的解，期望最终得到全局最优。</p>
+      
+      <pre><code class="language-text">贪心算法特点：
+✓ 简单直观，容易实现
+✓ 运行速度快
+✗ 不保证得到最优解
+✗ 需要证明贪心策略的正确性
+
+经典案例：找零钱
+
+问题：用最少的硬币凑出 63 美分
+硬币面值：25, 10, 5, 1
+
+贪心策略：每次选择面值最大的硬币
+
+步骤：
+63 - 25 = 38（25 美分×1）
+38 - 25 = 13（25 美分×2）
+13 - 10 = 3（10 美分×1）
+3 - 1 = 2（1 美分×1）
+2 - 1 = 1（1 美分×2）
+1 - 1 = 0（1 美分×3）
+
+结果：6 枚硬币（25×2, 10×1, 1×3）
+
+应用：
+- 活动选择问题
+- 霍夫曼编码
+- 最小生成树（Kruskal、Prim）
+- 最短路径（Dijkstra）</code></pre>
+
+      <h2 id="part6">第六部分：其他重要算法</h2>
+      
+      <h3 id="hash-tables">第 12 章：散列表</h3>
+      
+      <h4 id="hash-table-basics">12.1 基本原理</h4>
+      <p>散列表（Hash Table）是一种使用散列函数存储和查找数据的数据结构。</p>
+      
+      <pre><code class="language-text">散列表的工作原理：
+
+1. 散列函数：将键转换为数组索引
+   hash("apple") = 3
+   hash("banana") = 7
+
+2. 存储：
+   数组索引 3 → 存储 ("apple", value)
+   数组索引 7 → 存储 ("banana", value)
+
+3. 查找：
+   hash("apple") = 3 → 直接访问索引 3
+
+示意图：
+       散列函数
+"apple" ────→ 3 ────→ value
+"banana" ────→ 7 ────→ value
+"cherry" ────→ 2 ────→ value
+
+时间复杂度：
+- 查找：O(1) 平均，O(n) 最坏
+- 插入：O(1) 平均，O(n) 最坏
+- 删除：O(1) 平均，O(n) 最坏
+
+散列冲突解决：
+1. 链地址法：冲突的元素放在链表中
+2. 开放寻址法：寻找下一个空位置</code></pre>
+
+      <h3 id="recursion">第 13 章：递归</h3>
+      
+      <h4 id="recursion-basics">13.1 递归的概念</h4>
+      <p>递归是函数调用自身来解决问题的方法。</p>
+      
+      <pre><code class="language-text">递归的两个要素：
+1. 基准情况（base case）：函数不再调用自身的条件
+2. 递归情况（recursive case）：函数调用自身的条件
+
+示例：计算阶乘
+
+5! = 5 × 4 × 3 × 2 × 1 = 120
+
+递归实现：
+factorial(n):
+  if n == 1:        ← 基准情况
+    return 1
+  else:             ← 递归情况
+    return n * factorial(n-1)
+
+执行过程：
+factorial(5)
+= 5 * factorial(4)
+= 5 * 4 * factorial(3)
+= 5 * 4 * 3 * factorial(2)
+= 5 * 4 * 3 * 2 * factorial(1)
+= 5 * 4 * 3 * 2 * 1
+= 120
+
+递归栈：
+每次递归调用都会在调用栈中添加一层
+递归过深可能导致栈溢出
+
+优化：使用迭代或尾递归</code></pre>
+
+      <div class="final-message">
+        <h3>🎉 恭喜完成《算法图解》学习之旅！</h3>
+        <p>通过本书的学习，你掌握了：</p>
+        <ul>
+          <li><strong>算法基础：</strong>大 O 表示法、复杂度分析</li>
+          <li><strong>数据结构：</strong>数组、链表、栈、队列、散列表、树、图</li>
+          <li><strong>查找算法：</strong>二分查找</li>
+          <li><strong>排序算法：</strong>选择排序、快速排序</li>
+          <li><strong>图算法：</strong>BFS、Dijkstra 算法</li>
+          <li><strong>高级算法：</strong>动态规划、贪心算法、递归</li>
+        </ul>
+        <p><strong>算法图解的精髓在于：用直观的图示理解抽象的算法思想，让算法学习变得简单有趣。</strong></p>
+        
+        <h4>📚 推荐进一步学习</h4>
+        <ul>
+          <li>《算法图解》- Aditya Bhargava</li>
+          <li>《算法》（第 4 版）- Robert Sedgewick</li>
+          <li>《算法导论》- Thomas H. Cormen</li>
+          <li>《编程珠玑》- Jon Bentley</li>
+          <li>LeetCode 刷题实践</li>
+        </ul>
+      </div>
+    `,
+    category: '算法入门',
+    readTime: '120 分钟',
+    image: '📊',
+    tags: ['算法图解', '算法入门', '数据结构', '排序', '查找', '图算法', '动态规划', '可视化']
+  },
+  '7': {
+    title: '编程珠玑 - 编程艺术的经典智慧',
+    content: `
+      <h2 id="intro">📚 编程珠玑 - 编程艺术的经典智慧</h2>
+      
+      <p>本文基于 Jon Bentley 的经典著作《编程珠玑》（Programming Pearls），系统讲解编程中的核心思想和实用技巧。这本书不是关于具体编程语言的教程，而是关于如何思考问题、如何设计解决方案的编程艺术。</p>
+      
+      <div class="learning-objectives">
+        <h3>📌 学习目标</h3>
+        <ul>
+          <li>理解问题分析和定义的重要性</li>
+          <li>掌握算法设计的基本原理</li>
+          <li>学会数据结构的巧妙应用</li>
+          <li>培养程序性能优化的思维</li>
+          <li>提升代码调试和测试的技巧</li>
+          <li>建立编程美感和工程素养</li>
+        </ul>
+      </div>
+
+      <h2 id="part1">第一部分：问题定义与分析</h2>
+      
+      <h3 id="problem-definition">第 1 章：正确定义问题</h3>
+      
+      <h4 id="ask-the-right-question">1.1 提出正确的问题</h4>
+      <p>解决问题之前，首先要确保你理解的是正确的问题。</p>
+      
+      <p><strong>经典案例：卫星轨道计算</strong></p>
+      <ul>
+        <li>原始问题：如何计算卫星轨道？</li>
+        <li>深入分析后发现：实际需要的是预测卫星位置</li>
+        <li>最终解决方案：使用简化的近似公式，而非复杂的精确计算</li>
+        <li>结果：计算速度提升 100 倍，精度满足实际需求</li>
+      </ul>
+      
+      <p><strong>问题定义的技巧：</strong></p>
+      <ul>
+        <li><strong>重新表述问题：</strong>用不同的方式描述同一个问题</li>
+        <li><strong>询问"为什么"：</strong>探究问题的根本目的</li>
+        <li><strong>考虑边界情况：</strong>极端条件下的问题表现</li>
+        <li><strong>量化需求：</strong>明确性能、精度、成本等指标</li>
+      </ul>
+
+      <h4 id="reverse-thinking">1.2 逆向思维</h4>
+      <p>有时候，从相反的方向思考问题会得到意想不到的解决方案。</p>
+      
+      <p><strong>案例：电话账单排序</strong></p>
+      <ul>
+        <li>问题：如何快速排序百万级电话记录？</li>
+        <li>传统思路：改进排序算法（快速排序、归并排序）</li>
+        <li>逆向思维：为什么需要排序？因为要按电话号码查找</li>
+        <li>创新方案：使用直接寻址表，O(1) 时间查找，无需排序</li>
+      </ul>
+
+      <h2 id="part2">第二部分：算法设计技术</h2>
+      
+      <h3 id="algorithm-design">第 2 章：算法设计原理</h3>
+      
+      <h4 id="divide-and-conquer">2.1 分治法</h4>
+      <p>将复杂问题分解为若干个小问题，分别解决后合并结果。</p>
+      
+      <pre><code class="language-text">分治法的基本步骤：
+1. 分解（Divide）：将原问题分解为若干子问题
+2. 解决（Conquer）：递归地解决各子问题
+3. 合并（Combine）：将子问题的解合并为原问题的解
+
+经典应用：
+- 归并排序：O(n log n)
+- 快速排序：平均 O(n log n)
+- 二分查找：O(log n)
+- 大整数乘法</code></pre>
+
+      <h4 id="greedy-algorithm">2.2 贪心算法</h4>
+      <p>每一步都选择当前最优的解，期望最终得到全局最优。</p>
+      
+      <p><strong>案例：找零钱问题</strong></p>
+      <pre><code class="language-text">问题：用最少的硬币凑出指定金额
+
+贪心策略：每次选择面值最大的硬币
+
+示例（美分制）：
+目标：63 美分
+步骤：
+1. 选择 25 美分 × 2 = 50 美分（剩余 13 美分）
+2. 选择 10 美分 × 1 = 10 美分（剩余 3 美分）
+3. 选择 1 美分 × 3 = 3 美分（剩余 0 美分）
+结果：2 + 1 + 3 = 6 枚硬币
+
+注意：贪心算法不一定总是最优，但对美分制是最优的</code></pre>
+
+      <h4 id="dynamic-programming">2.3 动态规划</h4>
+      <p>将问题分解为重叠子问题，保存子问题的解避免重复计算。</p>
+      
+      <pre><code class="language-text">动态规划的核心要素：
+1. 最优子结构：问题的最优解包含子问题的最优解
+2. 重叠子问题：子问题会被重复计算
+3. 状态转移方程：定义如何从子问题的解得到原问题的解
+
+经典案例：斐波那契数列
+
+方法 1：递归（低效）
+fib(n) = fib(n-1) + fib(n-2)
+时间复杂度：O(2^n)
+
+方法 2：动态规划（高效）
+保存已计算的 fib 值
+时间复杂度：O(n)
+空间复杂度：O(n) 或 O(1)（优化后）</code></pre>
+
+      <h2 id="part3">第三部分：数据结构应用</h2>
+      
+      <h3 id="data-structures">第 3 章：巧妙的数据结构</h3>
+      
+      <h4 id="bitmap">3.1 位图（Bitmap）</h4>
+      <p>用位（bit）来表示元素的存在与否，极度节省空间。</p>
+      
+      <p><strong>经典案例：电话号码排序</strong></p>
+      <pre><code class="language-text">问题：排序 1000 万个 7 位电话号码
+
+传统方法：
+- 存储：1000 万 × 4 字节 = 40MB
+- 排序：O(n log n) 时间
+
+位图方法：
+- 使用 1000 万位的位图（约 1.25MB）
+- 第 i 位为 1 表示号码 i 存在
+- 扫描位图输出所有为 1 的位置
+
+优势：
+- 空间：节省 32 倍
+- 时间：O(n) 线性时间
+- 实现：简单高效</code></pre>
+
+      <h4 id="heap">3.2 堆（Heap）</h4>
+      <p>高效维护优先级队列，支持快速插入和删除最值。</p>
+      
+      <pre><code class="language-text">堆的应用场景：
+
+1. Top K 问题
+   - 找出最大的 K 个数
+   - 维护大小为 K 的最小堆
+   - 时间复杂度：O(n log K)
+
+2. 优先队列
+   - 任务调度系统
+   - 事件驱动模拟
+   - Dijkstra 最短路径算法
+
+3. 堆排序
+   - 时间复杂度：O(n log n)
+   - 空间复杂度：O(1)
+   - 不稳定排序</code></pre>
+
+      <h2 id="part4">第四部分：程序性能优化</h2>
+      
+      <h3 id="performance-optimization">第 4 章：性能优化策略</h3>
+      
+      <h4 id="time-space-tradeoff">4.1 时空权衡</h4>
+      <p>在时间和空间之间做出合理的选择。</p>
+      
+      <p><strong>案例：阶乘计算</strong></p>
+      <pre><code class="language-text">方法 1：每次计算（节省空间）
+factorial(n):
+    result = 1
+    for i = 1 to n:
+        result *= i
+    return result
+时间：O(n)，空间：O(1)
+
+方法 2：预计算表格（节省时间）
+预计算 factorial[0..MAX_N]
+查询时直接返回 factorial[n]
+时间：O(1)，空间：O(MAX_N)
+
+选择原则：
+- 频繁查询 → 预计算
+- 内存紧张 → 实时计算</code></pre>
+
+      <h4 id="caching">4.2 缓存技术</h4>
+      <p>利用局部性原理，将常用数据存储在快速访问的位置。</p>
+      
+      <p><strong>缓存的层次结构：</strong></p>
+      <ul>
+        <li>CPU 寄存器（最快，容量最小）</li>
+        <li>L1/L2/L3 缓存</li>
+        <li>主内存（RAM）</li>
+        <li>磁盘缓存</li>
+        <li>数据库查询缓存</li>
+        <li>Web 缓存（CDN、浏览器缓存）</li>
+      </ul>
+      
+      <p><strong>缓存策略：</strong></p>
+      <ul>
+        <li><strong>LRU（最近最少使用）：</strong>淘汰最久未访问的数据</li>
+        <li><strong>LFU（最不经常使用）：</strong>淘汰访问频率最低的数据</li>
+        <li><strong>FIFO（先进先出）：</strong>按进入顺序淘汰</li>
+      </ul>
+
+      <h2 id="part5">第五部分：代码优化技巧</h2>
+      
+      <h3 id="code-optimization">第 5 章：代码优化实战</h3>
+      
+      <h4 id="loop-optimization">5.1 循环优化</h4>
+      <p>循环往往是程序的性能瓶颈，优化循环能带来显著提升。</p>
+      
+      <pre><code class="language-text">优化技巧：
+
+1. 循环展开（Loop Unrolling）
+原始代码：
+for i = 0 to n-1:
+    a[i] = b[i] + c[i]
+
+展开后：
+for i = 0 to n-4 step 4:
+    a[i] = b[i] + c[i]
+    a[i+1] = b[i+1] + c[i+1]
+    a[i+2] = b[i+2] + c[i+2]
+    a[i+3] = b[i+3] + c[i+3]
+
+效果：减少循环控制开销，提升指令级并行
+
+2. 循环不变量外提
+原始代码：
+for i = 0 to n-1:
+    a[i] = b[i] * constant
+
+优化后：
+temp = constant
+for i = 0 to n-1:
+    a[i] = b[i] * temp
+
+3. 减少内存访问
+原始代码：
+for i = 0 to n-1:
+    sum += array[i].value
+
+优化后：
+for i = 0 to n-1:
+    sum += array[i]  // 直接存储 value 而非对象</code></pre>
+
+      <h4 id="function-optimization">5.2 函数优化</h4>
+      <pre><code class="language-text">优化策略：
+
+1. 内联小函数
+- 消除函数调用开销
+- 但可能增加代码体积
+
+2. 尾递归优化
+- 编译器将递归转换为迭代
+- 避免栈溢出
+
+3. 参数传递优化
+- 小对象：值传递
+- 大对象：引用/指针传递
+- 只读参数：const 引用
+
+4. 延迟计算
+- 只在需要时才计算结果
+- 避免不必要的计算</code></pre>
+
+      <h2 id="part6">第六部分：调试与测试</h2>
+      
+      <h3 id="debugging-testing">第 6 章：调试与测试艺术</h3>
+      
+      <h4 id="debugging-techniques">6.1 调试技巧</h4>
+      <p><strong>系统性调试方法：</strong></p>
+      <ol>
+        <li><strong>重现问题：</strong>找到稳定的重现步骤</li>
+        <li><strong>定位问题：</strong>使用二分法定位错误位置</li>
+        <li><strong>分析原因：</strong>理解为什么会出现这个错误</li>
+        <li><strong>修复验证：</strong>修复后全面测试</li>
+      </ol>
+      
+      <p><strong>调试工具：</strong></p>
+      <ul>
+        <li>断点调试器（GDB、Visual Studio Debugger）</li>
+        <li>日志输出（printf 调试）</li>
+        <li>内存检测工具（Valgrind、AddressSanitizer）</li>
+        <li>性能分析工具（Profiler）</li>
+      </ul>
+
+      <h4 id="testing-strategies">6.2 测试策略</h4>
+      <p><strong>测试层次：</strong></p>
+      <ul>
+        <li><strong>单元测试：</strong>测试单个函数或类</li>
+        <li><strong>集成测试：</strong>测试模块间的交互</li>
+        <li><strong>系统测试：</strong>测试整个系统</li>
+        <li><strong>回归测试：</strong>确保修改没有引入新错误</li>
+      </ul>
+      
+      <p><strong>测试用例设计：</strong></p>
+      <ul>
+        <li>正常情况：典型输入</li>
+        <li>边界情况：最小值、最大值、空值</li>
+        <li>异常情况：非法输入、极端条件</li>
+        <li>随机测试：模糊测试、压力测试</li>
+      </ul>
+
+      <h2 id="part7">第七部分：编程素养</h2>
+      
+      <h3 id="programming-craftsmanship">第 7 章：编程素养提升</h3>
+      
+      <h4 id="code-reading">7.1 阅读代码</h4>
+      <p>阅读优秀代码是提升编程能力的最佳途径。</p>
+      
+      <p><strong>阅读策略：</strong></p>
+      <ul>
+        <li>从整体架构开始，逐步深入细节</li>
+        <li>关注设计决策和权衡</li>
+        <li>理解代码背后的思考过程</li>
+        <li>做笔记，记录启发和疑问</li>
+      </ul>
+      
+      <p><strong>推荐阅读：</strong></p>
+      <ul>
+        <li>开源项目源码（Linux、Redis、Nginx）</li>
+        <li>经典算法实现（STL、JDK）</li>
+        <li>同行优秀代码</li>
+      </ul>
+
+      <h4 id="code-writing">7.2 编写代码</h4>
+      <p><strong>好代码的标准：</strong></p>
+      <ul>
+        <li><strong>正确性：</strong>功能正确，无 bug</li>
+        <li><strong>可读性：</strong>清晰易懂，命名规范</li>
+        <li><strong>可维护性：</strong>易于修改和扩展</li>
+        <li><strong>高效性：</strong>性能优良，资源利用合理</li>
+        <li><strong>简洁性：</strong>没有不必要的复杂性</li>
+      </ul>
+      
+      <p><strong>编程习惯：</strong></p>
+      <ul>
+        <li>写代码前先思考</li>
+        <li>保持代码简洁（KISS 原则）</li>
+        <li>避免重复（DRY 原则）</li>
+        <li>及时重构，保持代码质量</li>
+        <li>写注释，但要让代码自解释</li>
+      </ul>
+
+      <h2 id="part8">第八部分：实际问题解决</h2>
+      
+      <h3 id="real-world-problems">第 8 章：实战案例</h3>
+      
+      <h4 id="binary-search">8.1 二分查找的艺术</h4>
+      <pre><code class="language-text">标准二分查找：
+binary_search(arr, target):
+    left = 0, right = n-1
+    while left <= right:
+        mid = left + (right - left) / 2
+        if arr[mid] == target:
+            return mid
+        else if arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+
+注意事项：
+1. 循环条件：left <= right（包含等号）
+2. mid 计算：避免 (left+right)/2 溢出
+3. 边界更新：mid±1，避免死循环
+4. 适用条件：有序数组
+
+变体应用：
+- 查找第一个等于 target 的位置
+- 查找第一个大于等于 target 的位置
+- 查找最后一个小于等于 target 的位置
+- 旋转有序数组查找</code></pre>
+
+      <h4 id="string-processing">8.2 字符串处理</h4>
+      <pre><code class="language-text">经典问题：
+
+1. 字符串反转
+原地反转，双指针法
+
+2. KMP 模式匹配
+预处理模式串，构建 next 数组
+时间复杂度：O(m+n)
+
+3. 最长公共子串
+动态规划或后缀数组
+
+4. 字符串压缩
+游程编码：AAABBB→A3B3</code></pre>
+
+      <div class="final-message">
+        <h3>🎉 恭喜完成《编程珠玑》学习之旅！</h3>
+        <p>通过本书的学习，你掌握了：</p>
+        <ul>
+          <li><strong>问题思维：</strong>正确定义问题，逆向思考</li>
+          <li><strong>算法设计：</strong>分治、贪心、动态规划</li>
+          <li><strong>数据结构：</strong>位图、堆等巧妙应用</li>
+          <li><strong>性能优化：</strong>时空权衡、缓存技术</li>
+          <li><strong>代码优化：</strong>循环、函数优化技巧</li>
+          <li><strong>调试测试：</strong>系统性方法和工具</li>
+          <li><strong>编程素养：</strong>阅读、编写优秀代码</li>
+        </ul>
+        <p><strong>编程珠玑的精髓在于：用智慧和小技巧解决复杂问题，让程序既高效又优雅。</strong></p>
+        
+        <h4>📚 推荐进一步学习</h4>
+        <ul>
+          <li>《编程珠玑》（Programming Pearls）- Jon Bentley</li>
+          <li>《编程珠玑 II》（More Programming Pearls）- Jon Bentley</li>
+          <li>《算法导论》- Thomas H. Cormen</li>
+          <li>《代码大全》- Steve McConnell</li>
+          <li>《重构：改善既有代码的设计》- Martin Fowler</li>
+          <li>《程序员修炼之道》- Andrew Hunt, David Thomas</li>
+        </ul>
+      </div>
+    `,
+    category: '编程艺术',
+    readTime: '150 分钟',
+    image: '📚',
+    tags: ['编程珠玑', '算法', '数据结构', '性能优化', '编程技巧', '经典著作', '完整教程']
+  },
+  '6': {
+    title: '计算机科学概论 - 全面解读计算机科学的基石',
+    content: `
+      <h2 id="intro">💻 计算机科学概论 - 全面解读计算机科学的基石</h2>
+      
+      <p>本文基于 Glenn Brookshear 的经典著作《计算机科学概论》，系统介绍计算机科学的核心概念和基础原理。从二进制到人工智能，从硬件到软件，带你全面了解计算机科学的完整知识体系。</p>
+      
+      <div class="learning-objectives">
+        <h3>📌 学习目标</h3>
+        <ul>
+          <li>理解计算机科学的基本概念和发展历史</li>
+          <li>掌握数据表示、存储和处理的基本原理</li>
+          <li>理解计算机硬件组成和工作原理</li>
+          <li>掌握操作系统、网络、算法的核心概念</li>
+          <li>了解编程语言、软件工程、数据库的基础知识</li>
+          <li>认识人工智能、图形学、安全等前沿领域</li>
+        </ul>
+      </div>
+
+      <h2 id="part1">第一部分：计算机科学基础</h2>
+      
+      <h3 id="history">第 1 章：计算机科学的历史与发展</h3>
+      
+      <h4 id="early-computing">1.1 早期计算工具</h4>
+      <p>计算机的发展经历了漫长的历史进程，从古代的计算工具到现代电子计算机。</p>
+      
+      <p><strong>重要里程碑：</strong></p>
+      <ul>
+        <li><strong>算盘（公元前 3000 年）：</strong>人类最早的计算工具之一</li>
+        <li><strong>帕斯卡计算器（1642 年）：</strong>布莱兹·帕斯卡发明的机械计算器</li>
+        <li><strong>分析机（1837 年）：</strong>查尔斯·巴贝奇设计的通用计算机器，被誉为"计算机之父"</li>
+        <li><strong>阿达·洛夫莱斯（1843 年）：</strong>编写了第一个计算机程序，被誉为"第一位程序员"</li>
+        <li><strong>图灵机（1936 年）：</strong>艾伦·图灵提出的计算模型，为现代计算机奠定理论基础</li>
+      </ul>
+
+      <h4 id="computer-generations">1.2 计算机的世代演变</h4>
+      <p><strong>第一代（1940s-1950s）：电子管计算机</strong></p>
+      <ul>
+        <li>ENIAC（1946 年）：第一台通用电子计算机</li>
+        <li>使用电子管，体积庞大，功耗高</li>
+        <li>使用机器语言和汇编语言编程</li>
+      </ul>
+      
+      <p><strong>第二代（1950s-1960s）：晶体管计算机</strong></p>
+      <ul>
+        <li>晶体管的发明使计算机更小、更快、更可靠</li>
+        <li>出现了高级编程语言（COBOL、FORTRAN）</li>
+        <li>开始使用操作系统</li>
+      </ul>
+      
+      <p><strong>第三代（1960s-1970s）：集成电路计算机</strong></p>
+      <ul>
+        <li>集成电路（IC）将多个晶体管集成到单个芯片上</li>
+        <li>计算机变得更小、更便宜、更强大</li>
+        <li>出现了微型计算机</li>
+      </ul>
+      
+      <p><strong>第四代（1970s-至今）：超大规模集成电路计算机</strong></p>
+      <ul>
+        <li>微处理器的出现（Intel 4004，1971 年）</li>
+        <li>个人计算机革命（Apple II、IBM PC）</li>
+        <li>互联网和移动设备的普及</li>
+        <li>云计算、人工智能、量子计算的兴起</li>
+      </ul>
+
+      <h2 id="part2">第二部分：数据表示与存储</h2>
+      
+      <h3 id="binary-system">第 2 章：二进制与数据表示</h3>
+      
+      <h4 id="number-systems">2.1 数制系统</h4>
+      <p>计算机使用二进制系统来表示和处理所有数据。</p>
+      
+      <p><strong>常见数制：</strong></p>
+      <ul>
+        <li><strong>二进制（Base-2）：</strong>使用 0 和 1，计算机的基本语言</li>
+        <li><strong>十进制（Base-10）：</strong>人类日常使用的数制</li>
+        <li><strong>十六进制（Base-16）：</strong>用于简化二进制表示（0-9, A-F）</li>
+      </ul>
+      
+      <pre><code class="language-text">二进制转换示例：
+十进制 13 = 二进制 1101
+计算过程：13 ÷ 2 = 6 余 1
+                 6 ÷ 2 = 3 余 0
+                 3 ÷ 2 = 1 余 1
+                 1 ÷ 2 = 0 余 1
+从下往上读取余数：1101
+
+十六进制表示：
+二进制 1101 0101 = 十六进制 D5
+（1101=D, 0101=5）</code></pre>
+
+      <h4 id="data-types">2.2 数据类型与编码</h4>
+      <p><strong>整数表示：</strong></p>
+      <ul>
+        <li>无符号整数：只表示正数（0, 1, 2, ...）</li>
+        <li>有符号整数：使用最高位表示正负（补码表示）</li>
+      </ul>
+      
+      <p><strong>实数表示（浮点数）：</strong></p>
+      <ul>
+        <li>IEEE 754 标准：单精度（32 位）、双精度（64 位）</li>
+        <li>由符号位、指数位、尾数位组成</li>
+      </ul>
+      
+      <p><strong>字符编码：</strong></p>
+      <ul>
+        <li><strong>ASCII（7 位）：</strong>128 个字符，包括英文字母、数字、标点符号</li>
+        <li><strong>Unicode（16/32 位）：</strong>支持全球所有语言的字符</li>
+        <li><strong>UTF-8：</strong>可变长度编码，兼容 ASCII，互联网标准</li>
+      </ul>
+
+      <h4 id="storage-units">2.3 存储单位</h4>
+      <pre><code class="language-text">基本存储单位：
+1 bit（位） = 一个二进制位（0 或 1）
+1 byte（字节） = 8 bits
+
+常用单位：
+1 KB（千字节） = 1024 bytes = 2^10 bytes
+1 MB（兆字节） = 1024 KB = 2^20 bytes
+1 GB（吉字节） = 1024 MB = 2^30 bytes
+1 TB（太字节） = 1024 GB = 2^40 bytes
+1 PB（拍字节） = 1024 TB = 2^50 bytes</code></pre>
+
+      <h2 id="part3">第三部分：计算机硬件</h2>
+      
+      <h3 id="computer-architecture">第 3 章：计算机体系结构</h3>
+      
+      <h4 id="von-neumann">3.1 冯·诺依曼架构</h4>
+      <p>现代计算机基于冯·诺依曼提出的存储程序概念。</p>
+      
+      <p><strong>核心组成部分：</strong></p>
+      <ul>
+        <li><strong>运算器（ALU）：</strong>执行算术和逻辑运算</li>
+        <li><strong>控制器（CU）：</strong>协调和控制计算机各部件的工作</li>
+        <li><strong>存储器（Memory）：</strong>存储程序和数据</li>
+        <li><strong>输入设备（Input）：</strong>键盘、鼠标、扫描仪等</li>
+        <li><strong>输出设备（Output）：</strong>显示器、打印机、音响等</li>
+      </ul>
+
+      <h4 id="cpu">3.2 中央处理器（CPU）</h4>
+      <p>CPU 是计算机的"大脑"，负责执行指令和处理数据。</p>
+      
+      <p><strong>CPU 的主要组件：</strong></p>
+      <ul>
+        <li><strong>算术逻辑单元（ALU）：</strong>执行加减乘除、与或非等运算</li>
+        <li><strong>控制单元（CU）：</strong>从内存获取指令，解码并执行</li>
+        <li><strong>寄存器（Registers）：</strong>高速存储单元，临时存放数据和指令</li>
+        <li><strong>高速缓存（Cache）：</strong>L1、L2、L3 缓存，加速数据访问</li>
+      </ul>
+      
+      <p><strong>CPU 性能指标：</strong></p>
+      <ul>
+        <li><strong>时钟频率（GHz）：</strong>每秒执行的周期数</li>
+        <li><strong>核心数：</strong>单核、双核、四核、八核等</li>
+        <li><strong>指令集：</strong>x86、ARM、RISC-V 等架构</li>
+      </ul>
+
+      <h4 id="memory-hierarchy">3.3 存储器层次结构</h4>
+      <pre><code class="language-text">存储器层次结构（从快到慢）：
+┌─────────────────────────┐
+│      寄存器（Registers） │ ← 最快，容量最小
+├─────────────────────────┤
+│    高速缓存（Cache L1）  │
+├─────────────────────────┤
+│    高速缓存（Cache L2）  │
+├─────────────────────────┤
+│    高速缓存（Cache L3）  │
+├─────────────────────────┤
+│     主内存（RAM）        │
+├─────────────────────────┤
+│     固态硬盘（SSD）      │
+├─────────────────────────┤
+│     机械硬盘（HDD）      │
+├─────────────────────────┤
+│   光盘、磁带等           │ ← 最慢，容量最大
+└─────────────────────────┘</code></pre>
+
+      <h2 id="part4">第四部分：软件与编程</h2>
+      
+      <h3 id="software-types">第 4 章：软件分类</h3>
+      
+      <h4 id="system-software">4.1 系统软件</h4>
+      <p><strong>操作系统（OS）：</strong></p>
+      <ul>
+        <li>管理计算机硬件和软件资源</li>
+        <li>提供用户界面（命令行、图形界面）</li>
+        <li>常见操作系统：Windows、macOS、Linux、Android、iOS</li>
+      </ul>
+      
+      <p><strong>设备驱动程序：</strong></p>
+      <ul>
+        <li>使操作系统能够与硬件设备通信</li>
+        <li>如显卡驱动、声卡驱动、打印机驱动等</li>
+      </ul>
+      
+      <p><strong>实用工具：</strong></p>
+      <ul>
+        <li>磁盘清理、杀毒软件、压缩工具等</li>
+      </ul>
+
+      <h4 id="application-software">4.2 应用软件</h4>
+      <ul>
+        <li><strong>办公软件：</strong>Word、Excel、PowerPoint</li>
+        <li><strong>浏览器：</strong>Chrome、Firefox、Safari</li>
+        <li><strong>多媒体软件：</strong>Photoshop、Premiere、Audition</li>
+        <li><strong>开发工具：</strong>Visual Studio、IntelliJ IDEA、Eclipse</li>
+      </ul>
+
+      <h3 id="programming-languages">第 5 章：编程语言</h3>
+      
+      <h4 id="language-generations">5.1 编程语言的世代</h4>
+      <p><strong>第一代：机器语言</strong></p>
+      <ul>
+        <li>由 0 和 1 组成的二进制代码</li>
+        <li>直接由 CPU 执行，效率最高</li>
+        <li>难以编写和维护</li>
+      </ul>
+      
+      <p><strong>第二代：汇编语言</strong></p>
+      <ul>
+        <li>使用助记符（MOV、ADD、JMP 等）</li>
+        <li>需要通过汇编器转换为机器语言</li>
+        <li>仍然接近硬件，难以移植</li>
+      </ul>
+      
+      <p><strong>第三代：高级语言</strong></p>
+      <ul>
+        <li>接近自然语言和数学表达式</li>
+        <li>如 C、C++、Java、Python、JavaScript</li>
+        <li>需要编译或解释为机器语言</li>
+        <li>易于学习、编写和维护</li>
+      </ul>
+      
+      <p><strong>第四代：非常高级语言</strong></p>
+      <ul>
+        <li>面向特定领域（SQL、MATLAB）</li>
+        <li>声明式编程，描述"做什么"而非"怎么做"</li>
+      </ul>
+
+      <h4 id="programming-paradigms">5.2 编程范式</h4>
+      <p><strong>命令式编程（Imperative）：</strong></p>
+      <ul>
+        <li>描述如何一步步解决问题</li>
+        <li>如 C、Pascal</li>
+      </ul>
+      
+      <p><strong>面向对象编程（OOP）：</strong></p>
+      <ul>
+        <li>将数据和方法封装为对象</li>
+        <li>核心概念：类、对象、继承、多态、封装</li>
+        <li>如 Java、C++、Python</li>
+      </ul>
+      
+      <p><strong>函数式编程（Functional）：</strong></p>
+      <ul>
+        <li>将计算视为数学函数的求值</li>
+        <li>避免状态变化和可变数据</li>
+        <li>如 Haskell、Lisp、Scala</li>
+      </ul>
+
+      <h2 id="part5">第五部分：算法与数据结构</h2>
+      
+      <h3 id="algorithms">第 6 章：算法基础</h3>
+      
+      <h4 id="algorithm-concept">6.1 什么是算法</h4>
+      <p>算法是解决问题的明确指令序列，具有以下特征：</p>
+      <ul>
+        <li><strong>有穷性：</strong>在有限步骤内完成</li>
+        <li><strong>确定性：</strong>每一步都有明确定义</li>
+        <li><strong>输入：</strong>有零个或多个输入</li>
+        <li><strong>输出：</strong>有一个或多个输出</li>
+        <li><strong>可行性：</strong>每一步都可在有限时间内完成</li>
+      </ul>
+
+      <h4 id="sorting-algorithms">6.2 经典排序算法</h4>
+      <pre><code class="language-text">常见排序算法对比：
+
+1. 冒泡排序（Bubble Sort）
+   时间复杂度：O(n²)
+   空间复杂度：O(1)
+   特点：简单但效率低
+
+2. 快速排序（Quick Sort）
+   时间复杂度：O(n log n) 平均，O(n²) 最坏
+   空间复杂度：O(log n)
+   特点：分治思想，实际应用广泛
+
+3. 归并排序（Merge Sort）
+   时间复杂度：O(n log n)
+   空间复杂度：O(n)
+   特点：稳定排序，适合链表
+
+4. 堆排序（Heap Sort）
+   时间复杂度：O(n log n)
+   空间复杂度：O(1)
+   特点：使用堆数据结构</code></pre>
+
+      <h4 id="search-algorithms">6.3 搜索算法</h4>
+      <p><strong>顺序搜索（Sequential Search）：</strong></p>
+      <ul>
+        <li>从头到尾依次检查每个元素</li>
+        <li>时间复杂度：O(n)</li>
+        <li>适用于无序列表</li>
+      </ul>
+      
+      <p><strong>二分搜索（Binary Search）：</strong></p>
+      <ul>
+        <li>每次将搜索范围减半</li>
+        <li>时间复杂度：O(log n)</li>
+        <li>要求列表已排序</li>
+      </ul>
+
+      <h3 id="data-structures">第 7 章：数据结构</h3>
+      
+      <h4 id="linear-structures">7.1 线性数据结构</h4>
+      <p><strong>数组（Array）：</strong></p>
+      <ul>
+        <li>连续内存空间存储相同类型元素</li>
+        <li>支持随机访问，时间复杂度 O(1)</li>
+        <li>插入/删除效率低 O(n)</li>
+      </ul>
+      
+      <p><strong>链表（Linked List）：</strong></p>
+      <ul>
+        <li>节点通过指针连接</li>
+        <li>插入/删除效率高 O(1)</li>
+        <li>不支持随机访问 O(n)</li>
+      </ul>
+      
+      <p><strong>栈（Stack）：</strong></p>
+      <ul>
+        <li>后进先出（LIFO）</li>
+        <li>操作：push（入栈）、pop（出栈）</li>
+        <li>应用：函数调用栈、撤销操作</li>
+      </ul>
+      
+      <p><strong>队列（Queue）：</strong></p>
+      <ul>
+        <li>先进先出（FIFO）</li>
+        <li>操作：enqueue（入队）、dequeue（出队）</li>
+        <li>应用：任务调度、消息队列</li>
+      </ul>
+
+      <h4 id="non-linear-structures">7.2 非线性数据结构</h4>
+      <p><strong>树（Tree）：</strong></p>
+      <ul>
+        <li>层次结构，由节点组成</li>
+        <li>二叉树：每个节点最多两个子节点</li>
+        <li>二叉搜索树（BST）：左子树 < 根 < 右子树</li>
+        <li>应用：文件系统、数据库索引</li>
+      </ul>
+      
+      <p><strong>图（Graph）：</strong></p>
+      <ul>
+        <li>由顶点（节点）和边组成</li>
+        <li>有向图 vs 无向图</li>
+        <li>加权图 vs 无权图</li>
+        <li>应用：社交网络、地图导航、网络拓扑</li>
+      </ul>
+
+      <h2 id="part6">第六部分：网络与通信</h2>
+      
+      <h3 id="network-basics">第 8 章：计算机网络基础</h3>
+      
+      <h4 id="network-types">8.1 网络分类</h4>
+      <ul>
+        <li><strong>LAN（局域网）：</strong>覆盖小范围（家庭、办公室）</li>
+        <li><strong>MAN（城域网）：</strong>覆盖城市范围</li>
+        <li><strong>WAN（广域网）：</strong>覆盖大范围（国家、全球）</li>
+        <li><strong>Internet（互联网）：</strong>全球最大的网络</li>
+      </ul>
+
+      <h4 id="osi-model">8.2 OSI 七层模型</h4>
+      <pre><code class="language-text">OSI 模型（从下到上）：
+
+7. 应用层（Application）
+   - HTTP、FTP、SMTP、DNS
+   - 为应用程序提供网络服务
+
+6. 表示层（Presentation）
+   - 数据格式转换、加密解密
+   - JPEG、ASCII、SSL/TLS
+
+5. 会话层（Session）
+   - 建立、管理、终止会话
+   - RPC、SQL、NFS
+
+4. 传输层（Transport）
+   - TCP、UDP
+   - 端到端通信、流量控制
+
+3. 网络层（Network）
+   - IP、ICMP、ARP
+   - 路由选择、寻址
+
+2. 数据链路层（Data Link）
+   - Ethernet、WiFi、PPP
+   - 帧传输、错误检测
+
+1. 物理层（Physical）
+   - 电缆、光纤、无线电波
+   - 传输原始比特流</code></pre>
+
+      <h4 id="tcp-ip">8.3 TCP/IP 协议栈</h4>
+      <p><strong>IP 协议（Internet Protocol）：</strong></p>
+      <ul>
+        <li>负责数据包的路由和传输</li>
+        <li>IPv4：32 位地址（192.168.1.1）</li>
+        <li>IPv6：128 位地址（2001:0db8:85a3::8a2e:0370:7334）</li>
+      </ul>
+      
+      <p><strong>TCP 协议（Transmission Control Protocol）：</strong></p>
+      <ul>
+        <li>面向连接、可靠的传输协议</li>
+        <li>三次握手建立连接</li>
+        <li>流量控制、拥塞控制</li>
+      </ul>
+      
+      <p><strong>UDP 协议（User Datagram Protocol）：</strong></p>
+      <ul>
+        <li>无连接、不可靠但快速</li>
+        <li>适用于视频流、在线游戏等</li>
+      </ul>
+
+      <h2 id="part7">第七部分：数据库系统</h2>
+      
+      <h3 id="database-basics">第 9 章：数据库基础</h3>
+      
+      <h4 id="relational-database">9.1 关系型数据库</h4>
+      <p><strong>核心概念：</strong></p>
+      <ul>
+        <li><strong>表（Table）：</strong>由行和列组成的数据结构</li>
+        <li><strong>主键（Primary Key）：</strong>唯一标识每条记录</li>
+        <li><strong>外键（Foreign Key）：</strong>建立表与表之间的关系</li>
+        <li><strong>索引（Index）：</strong>加速数据查询</li>
+      </ul>
+      
+      <p><strong>SQL（Structured Query Language）：</strong></p>
+      <pre><code class="language-sql">-- 查询数据
+SELECT name, age FROM students WHERE age > 18;
+
+-- 插入数据
+INSERT INTO students (name, age) VALUES ('Alice', 20);
+
+-- 更新数据
+UPDATE students SET age = 21 WHERE name = 'Alice';
+
+-- 删除数据
+DELETE FROM students WHERE age < 18;
+
+-- 连接查询
+SELECT s.name, c.course_name
+FROM students s
+JOIN courses c ON s.course_id = c.id;</code></pre>
+
+      <h4 id="nosql">9.2 NoSQL 数据库</h4>
+      <ul>
+        <li><strong>文档数据库：</strong>MongoDB、CouchDB（存储 JSON 文档）</li>
+        <li><strong>键值数据库：</strong>Redis、DynamoDB（高性能缓存）</li>
+        <li><strong>列族数据库：</strong>Cassandra、HBase（大数据存储）</li>
+        <li><strong>图数据库：</strong>Neo4j（社交网络分析）</li>
+      </ul>
+
+      <h2 id="part8">第八部分：前沿领域</h2>
+      
+      <h3 id="artificial-intelligence">第 10 章：人工智能</h3>
+      
+      <h4 id="ai-basics">10.1 AI 基础</h4>
+      <p><strong>机器学习（Machine Learning）：</strong></p>
+      <ul>
+        <li>让计算机从数据中学习规律</li>
+        <li>监督学习、无监督学习、强化学习</li>
+        <li>应用：垃圾邮件过滤、推荐系统</li>
+      </ul>
+      
+      <p><strong>深度学习（Deep Learning）：</strong></p>
+      <ul>
+        <li>基于神经网络的机器学习</li>
+        <li>卷积神经网络（CNN）：图像识别</li>
+        <li>循环神经网络（RNN）：自然语言处理</li>
+        <li>Transformer：GPT、BERT 等模型</li>
+      </ul>
+
+      <h4 id="computer-graphics">10.2 计算机图形学</h4>
+      <ul>
+        <li>3D 建模与渲染</li>
+        <li>光线追踪、光栅化</li>
+        <li>应用：游戏、电影特效、VR/AR</li>
+      </ul>
+
+      <h4 id="cybersecurity">10.3 网络安全</h4>
+      <p><strong>安全威胁：</strong></p>
+      <ul>
+        <li>病毒、蠕虫、特洛伊木马</li>
+        <li>钓鱼攻击、DDoS 攻击</li>
+        <li>数据泄露、身份盗窃</li>
+      </ul>
+      
+      <p><strong>防护措施：</strong></p>
+      <ul>
+        <li>加密技术（对称加密、非对称加密）</li>
+        <li>防火墙、入侵检测系统</li>
+        <li>双因素认证、生物识别</li>
+      </ul>
+
+      <div class="final-message">
+        <h3>🎉 恭喜完成计算机科学概论之旅！</h3>
+        <p>现在你已经掌握了计算机科学的核心概念：</p>
+        <ul>
+          <li><strong>基础理论：</strong>二进制、算法、数据结构</li>
+          <li><strong>硬件知识：</strong>CPU、内存、存储设备</li>
+          <li><strong>软件系统：</strong>操作系统、编程语言</li>
+          <li><strong>网络技术：</strong>TCP/IP、HTTP、DNS</li>
+          <li><strong>数据管理：</strong>关系型数据库、NoSQL</li>
+          <li><strong>前沿领域：</strong>人工智能、图形学、安全</li>
+        </ul>
+        <p><strong>计算机科学的力量在于：它让你理解数字世界的运行规律，并用代码创造无限可能。</strong></p>
+        
+        <h4>📚 推荐进一步学习</h4>
+        <ul>
+          <li>《计算机科学概论》- Glenn Brookshear</li>
+          <li>《深入理解计算机系统》- Randal E. Bryant</li>
+          <li>《算法导论》- Thomas H. Cormen</li>
+          <li>《计算机网络：自顶向下方法》- James F. Kurose</li>
+          <li>在线课程：Coursera、edX、MIT OpenCourseWare</li>
+        </ul>
+      </div>
+    `,
+    category: '计算机科学',
+    readTime: '180 分钟',
+    image: '💻',
+    tags: ['计算机科学', '基础理论', '算法', '数据结构', '网络', '操作系统', '完整教程']
+  },
   '5': {
     title: 'Python 编程：从入门到实践 - 完整教程',
     content: `
@@ -330,7 +2493,7 @@ elif age < 18:
     price = 25
 else:
     price = 40
-print(f"Your admission cost is ${price}.")
+print(f"Your admission cost is \${price}.")
 
 # 多个 elif 块
 age = 66
@@ -342,7 +2505,7 @@ elif age < 65:
     price = 40
 else:  # age >= 65
     price = 20
-print(f"Your admission cost is ${price}.")
+print(f"Your admission cost is \${price}.")
 
 # 检查特殊元素
 requested_toppings = ['mushrooms', 'green peppers', 'extra cheese']

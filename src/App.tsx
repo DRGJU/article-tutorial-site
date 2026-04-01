@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ErrorBoundary, ScrollToTop, BackToTop } from './components/common';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import ArticleList from './pages/ArticleList';
 import ArticleDetail from './pages/ArticleDetail';
-import { ErrorBoundary, ScrollToTop, BackToTop } from './components/common';
 import './App.css';
 
 function App() {
