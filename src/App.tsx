@@ -4,28 +4,26 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import ArticleList from './pages/ArticleList';
 import ArticleDetail from './pages/ArticleDetail';
-import { ErrorBoundary, ScrollToTop, BackToTop } from './components/common';
+import { ScrollToTop, BackToTop } from './components/common';
 import './App.css';
 
 function App() {
   return (
-    <ErrorBoundary>
-      <BrowserRouter>
-        <ScrollToTop />
-        <div className="app">
-          <Header />
-          <main className="main-content">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/articles" element={<ArticleList />} />
-              <Route path="/article/:id" element={<ArticleDetail />} />
-            </Routes>
-          </main>
-          <Footer />
-          <BackToTop />
-        </div>
-      </BrowserRouter>
-    </ErrorBoundary>
+    <BrowserRouter>
+      <ScrollToTop />
+      <div className="app">
+        <Header />
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/articles" element={<ArticleList />} />
+            <Route path="/article/:id" element={<ArticleDetail />} />
+          </Routes>
+        </main>
+        <Footer />
+        <BackToTop />
+      </div>
+    </BrowserRouter>
   );
 }
 

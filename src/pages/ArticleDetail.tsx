@@ -330,7 +330,7 @@ elif age < 18:
     price = 25
 else:
     price = 40
-print(f"Your admission cost is ${price}.")
+print(f"Your admission cost is \${price}.")
 
 # 多个 elif 块
 age = 66
@@ -342,7 +342,7 @@ elif age < 65:
     price = 40
 else:  # age >= 65
     price = 20
-print(f"Your admission cost is ${price}.")
+print(f"Your admission cost is \${price}.")
 
 # 检查特殊元素
 requested_toppings = ['mushrooms', 'green peppers', 'extra cheese']
