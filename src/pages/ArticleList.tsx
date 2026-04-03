@@ -60,6 +60,17 @@ const ARTICLES_DATA = [
     readTime: '200 分钟',
     image: '🐍',
     views: 0
+  },
+  {
+    id: 6,
+    title: '深入理解计算机系统 - 完整知识体系',
+    excerpt: '基于 CSAPP 经典教材，系统讲解计算机系统的核心概念：数据表示、汇编、处理器架构、存储器层次、链接、异常控制流、虚拟内存、系统级 I/O、网络编程、并发编程等。',
+    category: '教程',
+    author: 'DRGJU',
+    date: '2024-04-03',
+    readTime: '300 分钟',
+    image: '🖥️',
+    views: 0
   }
 ];
 
