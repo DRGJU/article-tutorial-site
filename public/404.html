@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/article-tutorial-site/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="优质文章教学平台 - 分享知识与经验" />
+    <meta name="keywords" content="教程，文章，学习，技术，知识分享" />
+    <title>文章教学平台</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // GitHub Pages 404 处理 - 将所有 404 请求重定向到正确的路由
+      var path = window.location.pathname.replace(/\/article-tutorial-site/, '');
+      window.history.replaceState({}, '', '/article-tutorial-site' + path + window.location.search);
+    </script>
+    <!-- 使用动态加载脚本，避免硬编码文件名 -->
+    <script type="module">
+      // 动态导入主应用
+      import('/article-tutorial-site/assets/index-CZi1173Z.js');
+    </script>
+    <link rel="stylesheet" href="/article-tutorial-site/assets/index-Ciu1k4mR.css">
+  </body>
+</html>
