@@ -8,8 +8,12 @@ import { ScrollToTop, BackToTop } from './components/common';
 import './App.css';
 
 function App() {
+  // 检查当前是否在 GitHub Pages 环境（通过 hostname 判断）
+  const isGitHubPages = window.location.hostname === 'drgju.github.io';
+  const basename = isGitHubPages ? '/article-tutorial-site' : '';
+  
   return (
-    <BrowserRouter basename="/article-tutorial-site">
+    <BrowserRouter basename={basename}>
       <ScrollToTop />
       <div className="app">
         <Header />

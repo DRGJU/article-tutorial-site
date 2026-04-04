@@ -4,7 +4,8 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/article-tutorial-site/',
+  // 开发环境使用根路径，生产环境使用子路径
+  base: './',
   server: {
     port: 3000,
     open: true
