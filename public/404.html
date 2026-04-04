@@ -7,9 +7,6 @@
     <meta name="description" content="优质文章教学平台 - 分享知识与经验" />
     <meta name="keywords" content="教程，文章，学习，技术，知识分享" />
     <title>文章教学平台</title>
-    <script type="module" crossorigin src="/article-tutorial-site/assets/index-CZi1173Z.js"></script>
-    <link rel="modulepreload" crossorigin href="/article-tutorial-site/assets/vendor-DYVSoK-q.js">
-    <link rel="stylesheet" crossorigin href="/article-tutorial-site/assets/index-Ciu1k4mR.css">
   </head>
   <body>
     <div id="root"></div>
@@ -18,5 +15,11 @@
       var path = window.location.pathname.replace(/\/article-tutorial-site/, '');
       window.history.replaceState({}, '', '/article-tutorial-site' + path + window.location.search);
     </script>
+    <!-- 使用动态加载脚本，避免硬编码文件名 -->
+    <script type="module">
+      // 动态导入主应用
+      import('/article-tutorial-site/assets/index-CZi1173Z.js');
+    </script>
+    <link rel="stylesheet" href="/article-tutorial-site/assets/index-Ciu1k4mR.css">
   </body>
 </html>
