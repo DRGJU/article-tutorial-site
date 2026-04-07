@@ -1,157 +1,232 @@
-import { useParams, Link } from 'react-router-dom';
-import articles from '../data/articles';
+import React, { useEffect, useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
+import { ArticleContent } from '@/components/article/ArticleContent';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { Spinner } from '@/components/ui/Spinner';
+import { articleApi } from '@/api';
+import type { Article, Comment } from '@/types';
+import { formatDate } from '@/utils';
+import { useAuthStore } from '@/store/authStore';
 
-const articleContents: Record<number, string> = {
-  1: `
-    <h2>Docker 安装与配置完全指南</h2>
-    <p>本教程将带你从零开始学习 Docker，包含完整的安装步骤、配置优化和最佳实践。</p>
-    
-    <h3>1. Docker 简介</h3>
-    <p>Docker 是一个开源的应用容器引擎，让开发者可以打包他们的应用以及依赖包到一个可移植的容器中。</p>
-    
-    <h3>2. 安装 Docker</h3>
-    <pre><code># Ubuntu 安装
-sudo apt-get update
-sudo apt-get install docker.io
-
-# 验证安装
-docker --version</code></pre>
-    
-    <h3>3. 配置 Docker</h3>
-    <p>配置 Docker 镜像加速器可以提高下载速度。</p>
-    
-    <h3>4. 常用 Docker 命令</h3>
-    <pre><code># 运行容器
-docker run hello-world
-
-# 查看容器
-docker ps
-
-# 停止容器
-docker stop &lt;container_id&gt;</code></pre>
-  `,
-  2: `
-    <h2>计算机科学导论</h2>
-    <p>全面系统的计算机科学入门教程，涵盖计算机基础、编程、算法、数据结构等核心知识。</p>
-    
-    <h3>1. 计算机基础</h3>
-    <p>了解计算机的工作原理、硬件组成和软件系统。</p>
-    
-    <h3>2. 编程基础</h3>
-    <p>学习编程的基本概念、变量、循环、函数等。</p>
-    
-    <h3>3. 数据结构</h3>
-    <p>数组、链表、栈、队列、树等基本数据结构。</p>
-    
-    <h3>4. 算法</h3>
-    <p>排序、搜索、动态规划等经典算法。</p>
-  `,
-  3: `
-    <h2>编码：隐匿在计算机软件背后的语言</h2>
-    <p>从零开始系统讲解编码、二进制、逻辑电路到计算机工作原理的完整知识体系。</p>
-    
-    <h3>1. 编码的历史</h3>
-    <p>从摩尔斯电码到现代计算机编码的发展历程。</p>
-    
-    <h3>2. 二进制系统</h3>
-    <p>理解计算机如何使用 0 和 1 表示所有信息。</p>
-    
-    <h3>3. 逻辑电路</h3>
-    <p>与门、或门、非门等基本逻辑电路的工作原理。</p>
-  `,
-  4: `
-    <h2>网络是怎样连接的</h2>
-    <p>系统讲解从输入 URL 到网页显示的完整网络过程，涵盖 HTTP、DNS、TCP/IP 等核心知识。</p>
-    
-    <h3>1. 浏览器的工作原理</h3>
-    <p>当你在浏览器中输入 URL 后会发生什么？</p>
-    
-    <h3>2. DNS 解析</h3>
-    <p>域名如何转换为 IP 地址。</p>
-    
-    <h3>3. HTTP 协议</h3>
-    <p>超文本传输协议的工作原理。</p>
-    
-    <h3>4. TCP/IP 协议栈</h3>
-    <p>网络通信的基础协议。</p>
-  `,
-  5: `
-    <h2>Python 编程：从入门到实践</h2>
-    <p>从零开始系统讲解 Python 编程的基础知识和实践项目。</p>
-    
-    <h3>1. Python 基础语法</h3>
-    <pre><code># Hello World
-print("Hello, World!")
-
-# 变量
-name = "Python"
-version = 3.9
-
-# 循环
-for i in range(5):
-    print(i)</code></pre>
-    
-    <h3>2. 函数和模块</h3>
-    <p>学习如何定义函数和导入模块。</p>
-    
-    <h3>3. 实践项目</h3>
-    <p>通过实际项目巩固所学知识。</p>
-  `,
-  6: `
-    <h2>深入理解计算机系统</h2>
-    <p>基于 CSAPP 经典教材，系统讲解计算机系统的核心概念和原理。</p>
-    
-    <h3>1. 数据的表示</h3>
-    <p>整数、浮点数的机器级表示。</p>
-    
-    <h3>2. 汇编语言</h3>
-    <p>理解程序的机器级执行过程。</p>
-    
-    <h3>3. 处理器架构</h3>
-    <p>CPU 设计、流水线技术。</p>
-    
-    <h3>4. 存储器层次结构</h3>
-    <p>Cache、主存、虚拟内存的工作原理。</p>
-    
-    <h3>5. 系统编程</h3>
-    <p>链接、异常控制流、进程、I/O、网络、并发编程。</p>
-  `
-};
-
-function ArticleDetail() {
+const ArticleDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const articleId = parseInt(id || '0');
-  const article = articles.find(a => a.id === articleId);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
+  const [article, setArticle] = useState<Article | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLiking, setIsLiking] = useState(false);
+
+  useEffect(() => {
+    if (!id) return;
+    
+    const fetchArticle = async () => {
+      setIsLoading(true);
+      try {
+        const response = await articleApi.getArticle(parseInt(id));
+        setArticle(response.data);
+      } catch (error) {
+        console.error('Failed to fetch article:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchArticle();
+  }, [id]);
+
+  const handleLike = async () => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    if (!article || isLiking) return;
+
+    setIsLiking(true);
+    try {
+      const response = await articleApi.likeArticle(article.id);
+      setArticle(prev => prev ? { ...prev, likeCount: response.data.likeCount } : null);
+    } catch (error) {
+      console.error('Failed to like article:', error);
+    } finally {
+      setIsLiking(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gray-50">
+        <Header />
+        <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+          <div className="flex justify-center items-center py-20">
+            <Spinner size="lg" />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!article) {
-    return <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-      <h1>文章未找到</h1>
-      <Link to="/articles" style={{ color: '#e94560', marginTop: '20px', display: 'inline-block' }}>
-        ← 返回文章列表
-      </Link>
-    </div>;
+    return (
+      <div className="min-h-screen flex flex-col bg-gray-50">
+        <Header />
+        <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+          <div className="text-center py-20">
+            <div className="text-6xl mb-4">📄</div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">文章未找到</h1>
+            <p className="text-gray-600 mb-6">抱歉，您访问的文章不存在</p>
+            <Link to="/articles">
+              <Button>← 返回文章列表</Button>
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
   }
 
   return (
-    <article style={{ maxWidth: '800px', margin: '0 auto' }}>
-      <Link to="/articles" style={{ color: '#888', textDecoration: 'none', marginBottom: '20px', display: 'inline-block' }}>
-        ← 返回文章列表
-      </Link>
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Header />
       
-      <div style={{ fontSize: '64px', marginBottom: '20px' }}>{article.image}</div>
-      <h1 style={{ fontSize: '36px', marginBottom: '16px' }}>{article.title}</h1>
-      
-      <div style={{ display: 'flex', gap: '20px', marginBottom: '30px', color: '#888', fontSize: '14px' }}>
-        <span>分类：{article.category}</span>
-        <span>日期：{article.date}</span>
-      </div>
-      
-      <div 
-        style={{ lineHeight: '1.8', fontSize: '16px' }}
-        dangerouslySetInnerHTML={{ __html: articleContents[articleId] || '<p>文章内容加载中...</p>' }}
-      />
-    </article>
-  );
-}
+      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        {/* Back Link */}
+        <Link 
+          to="/articles"
+          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          返回文章列表
+        </Link>
 
-export default ArticleDetail;
+        {/* Article Header */}
+        <article className="bg-white rounded-xl shadow-md overflow-hidden">
+          {article.coverImage && (
+            <div className="relative h-64 md:h-80 overflow-hidden">
+              <img
+                src={article.coverImage}
+                alt={article.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+
+          <div className="p-6 md:p-8">
+            {/* Meta Info */}
+            <div className="flex items-center gap-2 mb-4 flex-wrap">
+              {article.category && (
+                <Badge variant="primary">{article.category.name}</Badge>
+              )}
+              {article.isFeatured && (
+                <Badge variant="warning">推荐</Badge>
+              )}
+              {article.tags?.map(tag => (
+                <Badge key={tag.id} variant="secondary">#{tag.name}</Badge>
+              ))}
+            </div>
+
+            {/* Title */}
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              {article.title}
+            </h1>
+
+            {/* Author and Date */}
+            <div className="flex items-center gap-6 text-gray-600 mb-6 pb-6 border-b">
+              <div className="flex items-center gap-3">
+                {article.author?.avatar ? (
+                  <img
+                    src={article.author.avatar}
+                    alt={article.author.username}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                    {article.author?.username?.[0]?.toUpperCase() || 'A'}
+                  </div>
+                )}
+                <div>
+                  <p className="font-medium text-gray-900">{article.author?.username || '匿名用户'}</p>
+                  <p className="text-sm text-gray-500">作者</p>
+                </div>
+              </div>
+              <div className="flex-1"></div>
+              <div className="text-sm">
+                <p className="text-gray-500">发布日期</p>
+                <p className="font-medium">{formatDate(article.publishedAt || article.createdAt)}</p>
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div className="flex items-center gap-6 mb-6 text-sm text-gray-600">
+              <span className="flex items-center gap-1">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                {article.viewCount} 阅读
+              </span>
+              <button
+                onClick={handleLike}
+                disabled={isLiking}
+                className={`flex items-center gap-1 transition-colors ${
+                  isLiking ? 'opacity-50' : 'hover:text-red-600'
+                }`}
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                {article.likeCount} 点赞
+              </button>
+              <span className="flex items-center gap-1">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                {article.commentCount} 评论
+              </span>
+            </div>
+
+            {/* Article Content */}
+            <div className="prose prose-lg max-w-none">
+              <ArticleContent content={article.content} />
+            </div>
+          </div>
+        </article>
+
+        {/* Share Section */}
+        <div className="bg-white rounded-xl shadow-md p-6 mt-6">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">分享这篇文章</h3>
+          <div className="flex gap-3">
+            <Button variant="outline" size="sm" className="flex-1">
+              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z"/>
+              </svg>
+              微信
+            </Button>
+            <Button variant="outline" size="sm" className="flex-1">
+              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+              LinkedIn
+            </Button>
+            <Button variant="outline" size="sm" className="flex-1">
+              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+              </svg>
+              Twitter
+            </Button>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default ArticleDetailPage;

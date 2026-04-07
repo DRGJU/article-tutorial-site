@@ -1,32 +1,40 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import Home from './pages/Home';
-import ArticleList from './pages/ArticleList';
-import ArticleDetail from './pages/ArticleDetail';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import HomePage from './pages/Home';
+import ArticlesPage from './pages/ArticleList';
+import ArticleDetailPage from './pages/ArticleDetail';
+import { useAuthStore } from './store/authStore';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
+  const { fetchCurrentUser } = useAuthStore();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchCurrentUser();
+    }
+  }, []);
+
   return (
-    <BrowserRouter basename="/article-tutorial-site">
-      <div className="app">
-        <header style={{ padding: '20px', backgroundColor: '#16213e', marginBottom: '20px' }}>
-          <nav style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', gap: '20px' }}>
-            <Link to="/" style={{ color: '#fff', textDecoration: 'none' }}>首页</Link>
-            <Link to="/articles" style={{ color: '#fff', textDecoration: 'none' }}>文章</Link>
-          </nav>
-        </header>
-        
-        <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/articles" element={<ArticleList />} />
-            <Route path="/article/:id" element={<ArticleDetail />} />
-          </Routes>
-        </main>
-        
-        <footer style={{ textAlign: 'center', padding: '40px 20px', marginTop: '40px', borderTop: '1px solid #0f3460' }}>
-          <p>© 2024 文章教学平台</p>
-        </footer>
-      </div>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/articles" element={<ArticlesPage />} />
+          <Route path="/article/:id" element={<ArticleDetailPage />} />
+        </Routes>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 
