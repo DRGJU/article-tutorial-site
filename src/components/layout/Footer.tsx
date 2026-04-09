@@ -48,12 +48,6 @@ export const Footer: React.FC = () => {
               <li>
                 <a href="/articles" className="text-gray-400 hover:text-white transition-colors">全部文章</a>
               </li>
-              <li>
-                <a href="/categories" className="text-gray-400 hover:text-white transition-colors">分类</a>
-              </li>
-              <li>
-                <a href="/tags" className="text-gray-400 hover:text-white transition-colors">标签</a>
-              </li>
             </ul>
           </div>
 

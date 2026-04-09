@@ -35,6 +35,11 @@ axiosInstance.interceptors.request.use(
 // 响应拦截器
 axiosInstance.interceptors.response.use(
   (response) => {
+    // 如果是 mock API，直接返回完整的响应对象
+    if (USE_MOCK) {
+      return response;
+    }
+    // 真实 API 只返回 data
     return response.data;
   },
   (error: AxiosError<ApiResponse<unknown>>) => {

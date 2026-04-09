@@ -5,6 +5,7 @@ import { Footer } from '@/components/layout/Footer';
 import { ArticleContent } from '@/components/article/ArticleContent';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
+import { BackToTop } from '@/components/ui/BackToTop';
 import { Spinner } from '@/components/ui/Spinner';
 import { articleApi } from '@/api';
 import type { Article, Comment } from '@/types';
@@ -26,7 +27,9 @@ const ArticleDetailPage: React.FC = () => {
       setIsLoading(true);
       try {
         const response = await articleApi.getArticle(parseInt(id));
-        setArticle(response.data);
+        // Mock API 返回格式：{ code: 200, message: 'success', data: article }
+        // 但 axios 拦截器已经提取了 response.data，所以直接访问 response.data
+        setArticle(response.data || response);
       } catch (error) {
         console.error('Failed to fetch article:', error);
       } finally {
@@ -225,6 +228,9 @@ const ArticleDetailPage: React.FC = () => {
       </main>
 
       <Footer />
+      
+      {/* 回到顶部按钮 */}
+      <BackToTop visibleThreshold={300} scrollDuration={800} />
     </div>
   );
 };

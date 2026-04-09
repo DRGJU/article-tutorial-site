@@ -53,21 +53,19 @@ export const Header: React.FC = () => {
           <nav className="hidden md:flex items-center gap-2">
             <NavLink to="/" isActive={location.pathname === '/'}>首页</NavLink>
             <NavLink to="/articles" isActive={location.pathname.startsWith('/articles')}>文章</NavLink>
-            <NavLink to="/categories" isActive={location.pathname.startsWith('/categories')}>分类</NavLink>
-            <NavLink to="/tags" isActive={location.pathname.startsWith('/tags')}>标签</NavLink>
           </nav>
 
           {/* User Actions */}
           <div className="hidden md:flex items-center gap-4">
             {isAuthenticated && user ? (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
                 <Link to="/dashboard" className="text-gray-200 hover:text-white transition-colors">
                   <div className="flex items-center gap-2">
                     {user.avatar ? (
                       <img src={user.avatar} alt={user.username} className="w-8 h-8 rounded-full" />
                     ) : (
                       <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-sm font-medium">
-                        {user.username[0].toUpperCase()}
+                        {user.username?.[0]?.toUpperCase() || 'U'}
                       </div>
                     )}
                     <span className="text-sm font-medium">{user.username}</span>
@@ -121,8 +119,6 @@ export const Header: React.FC = () => {
             <nav className="flex flex-col gap-2">
               <NavLink to="/" isActive={location.pathname === '/'}>首页</NavLink>
               <NavLink to="/articles" isActive={location.pathname.startsWith('/articles')}>文章</NavLink>
-              <NavLink to="/categories" isActive={location.pathname.startsWith('/categories')}>分类</NavLink>
-              <NavLink to="/tags" isActive={location.pathname.startsWith('/tags')}>标签</NavLink>
               {isAuthenticated && user ? (
                 <>
                   <Link to="/dashboard" className="px-4 py-2 text-gray-200 hover:bg-white/10 rounded-lg">

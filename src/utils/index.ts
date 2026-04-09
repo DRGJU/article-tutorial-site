@@ -11,8 +11,10 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * 格式化日期为 YYYY-MM-DD
  */
-export const formatDate = (date: string | Date): string => {
+export const formatDate = (date: string | Date | undefined | null): string => {
+  if (!date) return '';
   const d = new Date(date);
+  if (isNaN(d.getTime())) return '';
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
@@ -22,8 +24,10 @@ export const formatDate = (date: string | Date): string => {
 /**
  * 格式化日期时间为 YYYY-MM-DD HH:mm:ss
  */
-export const formatDateTime = (date: string | Date): string => {
+export const formatDateTime = (date: string | Date | undefined | null): string => {
+  if (!date) return '';
   const d = new Date(date);
+  if (isNaN(d.getTime())) return '';
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
@@ -36,9 +40,11 @@ export const formatDateTime = (date: string | Date): string => {
 /**
  * 格式化相对时间
  */
-export const formatRelativeTime = (date: string | Date): string => {
+export const formatRelativeTime = (date: string | Date | undefined | null): string => {
+  if (!date) return '';
   const now = new Date();
   const past = new Date(date);
+  if (isNaN(past.getTime())) return '';
   const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
 
   if (diffInSeconds < 0) return '刚刚';
@@ -63,9 +69,11 @@ export const formatRelativeTime = (date: string | Date): string => {
 /**
  * 格式化相对时间（详细版）
  */
-export const formatRelativeTimeDetailed = (date: string | Date): string => {
+export const formatRelativeTimeDetailed = (date: string | Date | undefined | null): string => {
+  if (!date) return '';
   const now = new Date();
   const past = new Date(date);
+  if (isNaN(past.getTime())) return '';
   const diffInSeconds = Math.floor((now.getTime() - past.getTime()) / 1000);
 
   if (diffInSeconds < 0) return '未来';
@@ -90,7 +98,8 @@ export const formatRelativeTimeDetailed = (date: string | Date): string => {
 /**
  * 截断文本
  */
-export const truncateText = (text: string, maxLength: number, suffix: string = '...'): string => {
+export const truncateText = (text: string | undefined | null, maxLength: number, suffix: string = '...'): string => {
+  if (!text) return '';
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength) + suffix;
 };

@@ -30,9 +30,12 @@ export const useArticleStore = create<ArticleState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await articleApi.getArticles(params);
-      set({ articles: response.items, isLoading: false });
+      // 确保正确处理响应数据
+      const articlesData = response.items || response.data || response || [];
+      set({ articles: articlesData, isLoading: false });
     } catch (error: any) {
-      set({ error: error.message || '获取文章失败', isLoading: false });
+      console.error('获取文章列表失败:', error);
+      set({ error: error.message || '获取文章失败', isLoading: false, articles: [] });
     }
   },
 
@@ -42,6 +45,7 @@ export const useArticleStore = create<ArticleState>((set, get) => ({
       const response = await articleApi.getArticle(id);
       return response.data;
     } catch (error: any) {
+      console.error('获取文章详情失败:', error);
       set({ error: error.message || '获取文章详情失败', isLoading: false });
       return null;
     }
@@ -50,18 +54,22 @@ export const useArticleStore = create<ArticleState>((set, get) => ({
   fetchCategories: async () => {
     try {
       const response = await categoryApi.getCategories();
-      set({ categories: response.data });
+      const categoriesData = response.data || response || [];
+      set({ categories: categoriesData });
     } catch (error: any) {
       console.error('获取分类失败:', error);
+      set({ categories: [] });
     }
   },
 
   fetchTags: async () => {
     try {
       const response = await tagApi.getTags();
-      set({ tags: response.data });
+      const tagsData = response.data || response || [];
+      set({ tags: tagsData });
     } catch (error: any) {
       console.error('获取标签失败:', error);
+      set({ tags: [] });
     }
   },
 
